@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<session version="1.0">
+<refactoring comment="Rename resource '/Server/ServerDesc.jardesc' to 'SparkServer.jardesc'&#13;&#10;- Original project: 'Server'&#13;&#10;- Original element: 'ServerDesc.jardesc'" description="Rename resource 'ServerDesc.jardesc'" flags="7" id="org.eclipse.jdt.ui.rename.resource" input="ServerDesc.jardesc" name="SparkServer.jardesc" stamp="1185299451914" version="1.0"/>
+</session>

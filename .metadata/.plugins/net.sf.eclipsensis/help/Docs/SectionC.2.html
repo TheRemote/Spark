@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+<title>Trim newlines</title>
+<meta name="generator" content="Halibut version 1.0 (NSIS Custom Build) xhtml-backend" />
+<link rel="stylesheet" href="style.css" type='text/css' /><script language="JavaScript" type="text/javascript" src="chmlink.js"></script>
+</head>
+
+<body>
+<p><a href='SectionC.1.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='SectionC.3.html'>Next</a></p>
+<a name="C.2"></a><h2>C.2 Trim newlines</h2>
+<pre> ; TrimNewlines
+ ; input, top of stack  (e.g. whatever$\r$\n)
+ ; output, top of stack (replaces, with e.g. whatever)
+ ; modifies no other variables.
+
+ Function TrimNewlines
+   Exch $R0
+   Push $R1
+   Push $R2
+   StrCpy $R1 0
+ 
+ loop:
+   IntOp $R1 $R1 - 1
+   StrCpy $R2 $R0 1 $R1
+   StrCmp $R2 &quot;$\r&quot; loop
+   StrCmp $R2 &quot;$\n&quot; loop
+   IntOp $R1 $R1 + 1
+   IntCmp $R1 0 no_trim_needed
+   StrCpy $R0 $R0 $R1
+ 
+ no_trim_needed:
+   Pop $R2
+   Pop $R1
+   Exch $R0
+ FunctionEnd
+</pre>
+<p><a href='SectionC.1.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='SectionC.3.html'>Next</a></p>
+
+<hr />
+
+<address>
+</address>
+</body>
+
+</html>

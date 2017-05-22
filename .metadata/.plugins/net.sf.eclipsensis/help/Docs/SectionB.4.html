@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+<title>Visual Basic 6 Runtimes</title>
+<meta name="generator" content="Halibut version 1.0 (NSIS Custom Build) xhtml-backend" />
+<link rel="stylesheet" href="style.css" type='text/css' /><script language="JavaScript" type="text/javascript" src="chmlink.js"></script>
+</head>
+
+<body>
+<p><a href='SectionB.3.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='AppendixC.html'>Next</a></p>
+<a name="B.4"></a><h2>B.4 Visual Basic 6 Runtimes</h2>
+
+<p>Add this code to your script to install and uninstall the VB6 runtimes.</p>
+
+<p>The correct version of the following files should be stored in your script folder (or modify the paths to the local files if you want to use another folder):</p>
+<ul>
+<li>msvbvm60.dll</li><li>oleaut32.dll</li><li>olepro32.dll</li><li>oleaut32.dll</li><li>comcat.dll</li><li>asycfilt.dll</li><li>stdole2.tlb</li></ul>
+
+<p>A <a href="http://support.microsoft.com/default.aspx?scid=kb;en-us;290887">Microsoft article</a> that explains how to obtain these files is available.</p>
+
+<p>To ask the user for a reboot, if required, use the Modern UI with a Finish page or use <a href="Section4.9.html#4.9.4.11">IfRebootFlag</a> and make your own page or message box.</p>
+<pre> !include Library.nsh
+
+ Var ALREADY_INSTALLED
+
+ Section &quot;-Install VB6 runtimes&quot;
+
+   ;Add code here that sets $ALREADY_INSTALLED to a non-zero value if the application is already installed. For example:
+
+   IfFileExists &quot;$INSTDIR\MyApp.exe&quot; 0 new_installation ;Replace MyApp.exe with your application filename
+     StrCpy $ALREADY_INSTALLED 1
+   new_installation:
+
+   !insertmacro InstallLib REGDLL $ALREADY_INSTALLED REBOOT_NOTPROTECTED &quot;msvbvm60.dll&quot; &quot;$SYSDIR\msvbvm60.dll&quot; &quot;$SYSDIR&quot;
+   !insertmacro InstallLib REGDLL $ALREADY_INSTALLED REBOOT_PROTECTED    &quot;oleaut32.dll&quot; &quot;$SYSDIR\oleaut32.dll&quot; &quot;$SYSDIR&quot;
+   !insertmacro InstallLib REGDLL $ALREADY_INSTALLED REBOOT_PROTECTED    &quot;olepro32.dll&quot; &quot;$SYSDIR\olepro32.dll&quot; &quot;$SYSDIR&quot;
+   !insertmacro InstallLib REGDLL $ALREADY_INSTALLED REBOOT_PROTECTED    &quot;comcat.dll&quot;   &quot;$SYSDIR\comcat.dll&quot;   &quot;$SYSDIR&quot;
+   !insertmacro InstallLib DLL    $ALREADY_INSTALLED REBOOT_PROTECTED    &quot;asycfilt.dll&quot; &quot;$SYSDIR\asycfilt.dll&quot; &quot;$SYSDIR&quot;
+   !insertmacro InstallLib TLB    $ALREADY_INSTALLED REBOOT_PROTECTED    &quot;stdole2.tlb&quot;  &quot;$SYSDIR\stdole2.tlb&quot;  &quot;$SYSDIR&quot;
+
+ SectionEnd
+
+ Section &quot;-un.Uninstall VB6 runtimes&quot;
+
+   !insertmacro UnInstallLib REGDLL SHARED NOREMOVE &quot;$SYSDIR\msvbvm60.dll&quot;
+   !insertmacro UnInstallLib REGDLL SHARED NOREMOVE &quot;$SYSDIR\oleaut32.dll&quot;
+   !insertmacro UnInstallLib REGDLL SHARED NOREMOVE &quot;$SYSDIR\olepro32.dll&quot;
+   !insertmacro UnInstallLib REGDLL SHARED NOREMOVE &quot;$SYSDIR\comcat.dll&quot;
+   !insertmacro UnInstallLib DLL    SHARED NOREMOVE &quot;$SYSDIR\asycfilt.dll&quot;
+   !insertmacro UnInstallLib TLB    SHARED NOREMOVE &quot;$SYSDIR\stdole2.tlb&quot;
+
+ SectionEnd
+</pre>
+
+<p>You can use similar code to install common VB6 ActiveX controls (such as the controls for Windows Common Controls).</p>
+<p><a href='SectionB.3.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='AppendixC.html'>Next</a></p>
+
+<hr />
+
+<address>
+</address>
+</body>
+
+</html>

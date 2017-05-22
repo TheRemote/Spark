@@ -1,0 +1,496 @@
+package codemallet.spark.server.net;
+
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.util.StringTokenizer;
+
+import codemallet.spark.server.Server;
+import codemallet.spark.server.map.Flag;
+import codemallet.spark.server.map.Map;
+import codemallet.spark.server.player.Player;
+
+public class NetProcessor
+{
+	Server server;
+
+	Player localPlayer;
+
+	public NetProcessor(Server server)
+	{
+		this.server = server;
+	}
+
+	public void doRequest(String line, Player localPlayer)
+	{
+		this.localPlayer = localPlayer;
+		if (line.startsWith("ping"))
+			server.players.sendUDP(localPlayer.Index, "pong");
+		else if (line.startsWith("tcpping"))
+			server.players.sendTo(localPlayer.Index, "tcppong");
+		else if (line.startsWith("m "))
+			processMovement(line);
+		else if (line.startsWith("laser"))
+			processLaser(line);
+		else if (line.startsWith("missile"))
+			processMissile(line);
+		else if (line.startsWith("grenade"))
+			processGrenade(line);
+		else if (line.startsWith("bouncy"))
+			processBouncy(line);
+		else if (line.startsWith("death"))
+			processDeath(line);
+		else if (line.startsWith("smoking"))
+			processSmoking(line);
+		else if (line.startsWith("drop"))
+			processDropFlag();
+		else if (line.startsWith("joinGame"))
+			processJoinGame(line);
+		else if (line.startsWith("version"))
+			processVersion(line);
+		else if (line.startsWith("disableUDP"))
+			processDisableUDP(line);
+		else if (line.startsWith("changeMap"))
+			processChangeMap(line);
+		else if (line.startsWith("changeTeam"))
+			processChangeTeam(line);
+		else if (line.startsWith("broadcast"))
+			processBroadcast(line);
+		else if (line.startsWith("teamchat"))
+			processTeamChat(line);
+		else if (line.startsWith("shutdown"))
+			processShutdown();
+		else if (line.startsWith("rgba "))
+			processRGBA(line);
+		else if (line.equals("establishUDP"))
+			localPlayer.EstablishedUDP = true;
+		else if (line.startsWith("nadespeed "))
+			processNadeSpeed(line);
+		else if (line.equals("crazyweapons"))
+			processCrazyWeapons();
+		else if (line.startsWith("timestamp "))
+			processTimestamp(line);
+		else
+			System.err.println("Command unrecognized - " + line);
+	}
+
+	private void processMovement(String line)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		st.nextToken();
+
+		float X = Float.parseFloat(st.nextToken());
+		float Y = Float.parseFloat(st.nextToken());
+		short MoveX = Short.parseShort(st.nextToken());
+		short MoveY = Short.parseShort(st.nextToken());
+		int Health = Integer.parseInt(st.nextToken());
+		int Energy = Integer.parseInt(st.nextToken());
+
+		if (Math.abs(localPlayer.X - X) < 64
+				&& Math.abs(localPlayer.Y - Y) < 64)
+		{
+			localPlayer.X = X;
+			localPlayer.Y = Y;
+			localPlayer.Health = Health;
+			localPlayer.Energy = Energy;
+
+			localPlayer.movementCorrectionStrikes = 0;
+
+			if (localPlayer.timeSpawn > 0)
+			{
+				if (MoveX != 0 || MoveY != 0)
+					localPlayer.MovedInPen = true;
+			}
+
+			server.players.sendGameUDP(localPlayer.Index, "m "
+					+ localPlayer.Index + " " + (float) X + " " + (float) Y
+					+ " " + MoveX + " " + MoveY + " " + Health + " " + Energy);
+		}
+		else
+		{
+			localPlayer.movementCorrectionStrikes++;
+			if (localPlayer.movementCorrectionStrikes > 3
+					&& server.Tick > localPlayer.timeCorrectPosition)
+			{
+				localPlayer.timeCorrectPosition = server.Tick + 500;
+				server.players.sendTo(localPlayer.Index, "move "
+						+ (int) localPlayer.X + " " + (int) localPlayer.Y);
+			}
+		}
+	}
+
+	private void processBroadcast(String line)
+	{
+		if (line != null && line.length() > 10)
+		{
+			String Message = line.substring(10, line.length());
+			server.players.sendGame(localPlayer.Index, "broadcast "
+					+ localPlayer.Index + " " + Message);
+			System.err.println(localPlayer.Name + " > " + Message);
+		}
+	}
+
+	private void processTeamChat(String line)
+	{
+		if (line != null && line.length() > 9)
+		{
+			String Message = line.substring(9, line.length());
+			server.players.sendToTeam(localPlayer.Index, localPlayer.Team,
+					"teamchat " + localPlayer.Index + " " + Message);
+			System.err.println(localPlayer.Name + " (TO TEAM) > " + Message);
+		}
+	}
+
+	private void processJoinGame(String line)
+	{
+		if (localPlayer.Verified == true)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			server.players.joinGame(localPlayer.Index);
+		}
+	}
+
+	private void processLaser(String line)
+	{
+		if (localPlayer.timeDead == 0 && localPlayer.Team >= 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			float X = Float.parseFloat(st.nextToken());
+			float Y = Float.parseFloat(st.nextToken());
+			double Angle = Double.parseDouble(st.nextToken());
+
+			if (Math.abs(localPlayer.X - (X + 16)) < 64
+					&& Math.abs(localPlayer.Y - (Y + 16)) < 64)
+			{
+				if (server.Tick > localPlayer.timeMaxClickSpeed)
+				{
+					localPlayer.timeMaxClickSpeed = server.Tick + 92;
+					server.players.sendGameUDP(localPlayer.Index, "laser "
+							+ localPlayer.Index + " " + X + " " + Y + " "
+							+ Angle);
+				}
+			}
+		}
+	}
+
+	private void processMissile(String line)
+	{
+		if (localPlayer.timeDead == 0 && localPlayer.Team >= 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			float X = Float.parseFloat(st.nextToken());
+			float Y = Float.parseFloat(st.nextToken());
+			double Angle = Double.parseDouble(st.nextToken());
+
+			if (localPlayer.MissileCharges > 0)
+			{
+				localPlayer.MissileCharges--;
+				if (Math.abs(localPlayer.X - (X + 16)) < 64
+						&& Math.abs(localPlayer.Y - (Y + 16)) < 64)
+				{
+					server.players.sendGameUDP(localPlayer.Index, "missile "
+							+ localPlayer.Index + " " + X + " " + Y + " "
+							+ Angle);
+				}
+			}
+		}
+	}
+
+	private void processGrenade(String line)
+	{
+		if (localPlayer.timeDead == 0 && localPlayer.Team >= 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			float X = Float.parseFloat(st.nextToken());
+			float Y = Float.parseFloat(st.nextToken());
+			double Angle = Double.parseDouble(st.nextToken());
+			float TargetX = Float.parseFloat(st.nextToken());
+			float TargetY = Float.parseFloat(st.nextToken());
+
+			if (localPlayer.GrenadeCharges > 0)
+			{
+				localPlayer.GrenadeCharges--;
+				if (Math.abs(localPlayer.X - (X + 16)) < 64
+						&& Math.abs(localPlayer.Y - (Y + 16)) < 64)
+				{
+					server.players.sendGameUDP(localPlayer.Index, "grenade "
+							+ localPlayer.Index + " " + X + " " + Y + " "
+							+ Angle + " " + TargetX + " " + TargetY);
+				}
+			}
+		}
+	}
+
+	private void processBouncy(String line)
+	{
+		if (localPlayer.timeDead == 0 && localPlayer.Team >= 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			float X = Float.parseFloat(st.nextToken());
+			float Y = Float.parseFloat(st.nextToken());
+			double Angle = Double.parseDouble(st.nextToken());
+
+			if (localPlayer.BouncyCharges > 0)
+			{
+				localPlayer.BouncyCharges--;
+				if (Math.abs(localPlayer.X - (X + 16)) < 64
+						&& Math.abs(localPlayer.Y - (Y + 16)) < 64)
+				{
+					server.players.sendGameUDP(localPlayer.Index, "bouncy "
+							+ localPlayer.Index + " " + X + " " + Y + " "
+							+ Angle);
+				}
+			}
+		}
+	}
+
+	private void processDeath(String line)
+	{
+		if (localPlayer.timeDead == 0 && localPlayer.Team >= 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			byte Killer = Byte.parseByte(st.nextToken());
+			server.players.Death(localPlayer.Index, Killer);
+		}
+	}
+
+	private void processSmoking(String line)
+	{
+		if (localPlayer.timeDead == 0 && localPlayer.Team >= 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			byte Smoking = Byte.parseByte(st.nextToken());
+			server.players.sendGameUDP(localPlayer.Index, "smoking "
+					+ localPlayer.Index + " " + Smoking);
+		}
+	}
+
+	private void processVersion(String line)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		st.nextToken();
+
+		if (st.nextToken().equals(Server.Version) == true)
+		{
+			localPlayer.Name = st.nextToken();
+			System.err.println("Player " + localPlayer.Name
+					+ " attempting to join");
+			if (st.nextToken().compareTo(server.Password) == 0)
+			{
+				localPlayer.Verified = true;
+				localPlayer.sendTCP("beginJoining " + server.map.MapFile);
+			}
+			else
+			{
+				localPlayer.Verified = false;
+				localPlayer.sendTCP("badpassword");
+			}
+		}
+		else
+		{
+			localPlayer.sendTCP("version");
+		}
+	}
+
+	private void processDisableUDP(String line)
+	{
+		System.err.println(localPlayer.Name + " disabled UDP");
+		localPlayer.DisableUDP = true;
+	}
+
+	private void processChangeMap(String line)
+	{
+		if (localPlayer.Name.toLowerCase().compareTo("remote") == 0
+				|| localPlayer.Name.toLowerCase().compareTo("k0rrupt") == 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			try
+			{
+				String Map = st.nextToken();
+				try
+				{
+					InputStream in = new FileInputStream("maps/" + Map);
+					in.close();
+
+					server.players.ResetGame();
+					server.map = new Map(server, Map);
+					server.players.ChangeMap();
+				}
+				catch (Exception e)
+				{
+					server.players.sendTo(localPlayer.Index, "message Map "
+							+ Map + " was not found.");
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private void processChangeTeam(String line)
+	{
+		if (server.Tick > localPlayer.timeTeamSwitch)
+		{
+			localPlayer.timeTeamSwitch = server.Tick + 5000;
+
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			byte Team = Byte.parseByte(st.nextToken());
+
+			if (Team < server.map.GameMap.numTeams)
+			{
+				if (localPlayer.Team == -1)
+				{
+					if (server.players.getPlayerCount() < server.MaxPlayers)
+					{
+						server.players.setTeam(localPlayer.Index, Team);
+					}
+					else
+					{
+						server.players
+								.sendTo(
+										localPlayer.Index,
+										"message The game is full.  Please wait for a player to leave, or join a different game!");
+					}
+				}
+				else
+				{
+					server.players.setTeam(localPlayer.Index, Team);
+				}
+			}
+		}
+	}
+
+	private void processDropFlag()
+	{
+		if (localPlayer.hasFlag == true)
+		{
+			Flag flag = (Flag) server.map.Flags.get(localPlayer.FlagIndex);
+			flag.onGround = true;
+			flag.onPlayer = false;
+			flag.onPole = false;
+			flag.timeDrop = server.Tick + 5000;
+			flag.timeReturn = server.Tick + 60000;
+			flag.lastTeam = localPlayer.Team;
+			flag.X = localPlayer.X + 16;
+			flag.Y = localPlayer.Y + 16;
+			localPlayer.hasFlag = false;
+			server.players.sendGame((byte) -1, "flag "
+					+ (byte) localPlayer.FlagIndex + " " + (byte) 5 + " "
+					+ (short) flag.X + " " + (short) flag.Y);
+
+		}
+	}
+
+	private void processShutdown()
+	{
+		if (localPlayer.Name.toLowerCase().compareTo("remote") == 0
+				|| localPlayer.Name.toLowerCase().compareTo("k0rrupt") == 0)
+		{
+			if (localPlayer != null && localPlayer.Name != null)
+				System.err.println(localPlayer.Name
+						+ " is shutting down the server...");
+			else
+				System.err.println("Shutting down the server...");
+
+			server.Close();
+		}
+	}
+
+	private void processRGBA(String line)
+	{
+		if (localPlayer.Name.toLowerCase().compareTo("remote") == 0
+				|| localPlayer.Name.toLowerCase().compareTo("k0rrupt") == 0)
+		{
+			StringTokenizer st = new StringTokenizer(line);
+			st.nextToken();
+
+			int Red = Integer.parseInt(st.nextToken());
+			int Green = Integer.parseInt(st.nextToken());
+			int Blue = Integer.parseInt(st.nextToken());
+			int Alpha = Integer.parseInt(st.nextToken());
+
+			server.players.sendGame((byte) -1, "rgba " + localPlayer.Index
+					+ " " + Red + " " + Green + " " + Blue + " " + Alpha);
+		}
+	}
+
+	private void processNadeSpeed(String line)
+	{
+		if (localPlayer.Name.toLowerCase().compareTo("remote") == 0
+				|| localPlayer.Name.toLowerCase().compareTo("k0rrupt") == 0)
+		{
+			server.players.sendGame((byte) -1, line);
+		}
+	}
+
+	private void processCrazyWeapons()
+	{
+		server.map.GameMap.MissileTime = 0;
+		server.map.GameMap.GrenadeTime = 0;
+		server.map.GameMap.BouncyTime = 0;
+
+		server.players.sendGame((byte) -1, "crazyweapons");
+	}
+
+	private void processTimestamp(String line)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		st.nextToken();
+
+		long timestamp = Long.parseLong(st.nextToken());
+		long epoch = Long.parseLong(st.nextToken());
+
+		if (localPlayer.timestampLastTick != 0
+				&& localPlayer.timestampLastEpoch != 0)
+		{
+			long EpochDifference = epoch - localPlayer.timestampLastEpoch;
+			long TickDifference = timestamp - localPlayer.timestampLastTick;
+			if (Math.abs(TickDifference - EpochDifference) > 200)
+			{
+				String CheatString = localPlayer.Name
+						+ " was detected speedhacking.  Epoch: "
+						+ EpochDifference + "   Tick: " + TickDifference;
+				System.err.println(CheatString);
+				try
+				{
+					FileWriter fw = new FileWriter("CheatLog.txt", true);
+					fw.write(CheatString + "\r\n");
+					fw.flush();
+					fw.close();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			localPlayer.timestampLastEpoch = epoch;
+			localPlayer.timestampLastTick = timestamp;
+		}
+		else
+		{
+			localPlayer.timestampLastTick = timestamp;
+			localPlayer.timestampLastEpoch = epoch;
+		}
+	}
+}

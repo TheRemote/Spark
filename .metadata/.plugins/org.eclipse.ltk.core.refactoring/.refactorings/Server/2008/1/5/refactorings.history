@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;codemallet.spark.server.net.Packet&apos; to &apos;NetEvent&apos;&#x0D;&#x0A;- Original project: &apos;Server&apos;&#x0D;&#x0A;- Original element: &apos;codemallet.spark.server.net.Packet&apos;&#x0D;&#x0A;- Renamed element: &apos;codemallet.spark.server.net.NetEvent&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;Packet&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/&lt;codemallet.spark.server.net{Packet.java[Packet" matchStrategy="1" name="NetEvent" qualified="false" references="true" similarDeclarations="false" stamp="1201797520392" textual="false" version="1.0"/>
+</session>

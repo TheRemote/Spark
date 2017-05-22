@@ -1,0 +1,46 @@
+Volume controls need to work
+Update in-game when player joins clan or leaves clan
+Switch to AFK mode when lobby is minimized
+CloseHubs command that closes all the hubs (used for updating)
+In-Game flood timer
+Ban from room moderator option
+Make ignoring in-game update ignoring in lobby and vice versa
+/r command
+Add god mode protection, energy hack protection
+Speed hack protection - autoban?
+Interesting idea for laggers, believe the hit messages after lagging for certain time
+Fix the player list in-game to support scrolling
+Add admin room autojoin for guides+ only
+Add average FPS tracking for java2d and lwjgl
+Add average ping tracking
+Move all the game error messages to the lobby
+Enforce spectator limit
+
+Make map change command update the lobby display
+Add team scores to the lobby display
+Damage counter
+Click info command for players in the lobby
+Spark edit bans needs to set the icon on the frame
+
+Option for tipped lasers and their color
+Option for showing hits the old style
+Option to show private messages in tabs
+
+Online time accumulator
+
+Create a store manager
+Name color
+Status icon
+
+
+
+-- FUTURE --
+Free-For-All game type
+Admin Editor
+Powerups
+Game Timer
+Hotkey to go directly to certain specials
+
+
+
+===DONE===

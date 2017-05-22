@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 3 element(s) from project &apos;Spark&apos;&#x0D;&#x0A;- Original project: &apos;Spark&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     codemallet.spark.engines.slick.FontTT.java&#x0D;&#x0A;     codemallet.spark.engines.slick.Texture.java&#x0D;&#x0A;     codemallet.spark.engines.slick.TextureLoader.java" description="Delete elements" element1="/&lt;codemallet.spark.engines.slick{FontTT.java" element2="/&lt;codemallet.spark.engines.slick{Texture.java" element3="/&lt;codemallet.spark.engines.slick{TextureLoader.java" elements="3" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1193771651046" subPackages="false" version="1.0"/>
+</session>

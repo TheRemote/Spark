@@ -1,0 +1,332 @@
+package codemallet.spark.engines.slick;
+
+import java.awt.Font;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.BigImage;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.loading.DeferredResource;
+import org.newdawn.slick.loading.LoadingList;
+
+import codemallet.spark.Spark;
+import codemallet.spark.engines.GameEngine;
+import codemallet.spark.engines.GameResources;
+import codemallet.spark.engines.KeyboardEvent;
+import codemallet.spark.engines.MousePressEvent;
+import codemallet.spark.engines.SparkEvents;
+
+public final class SlickGame extends BasicGame
+{
+	private final Spark game;
+
+	private final SlickEngine slickEngine;
+
+	private boolean UseBigImage = false;
+
+	protected Graphics g;
+
+	private DeferredResource nextResource;
+
+	public SlickGame(Spark game, SlickEngine slickEngine)
+	{
+		super("Spark");
+
+		this.game = game;
+		this.slickEngine = slickEngine;
+	}
+
+	public final void init(GameContainer container)
+	{
+		try
+		{
+			// Check if BigImage use is necessary
+			int MaximumTextureSize = BigImage.getMaxSingleImageSize();
+			if (MaximumTextureSize < 2048)
+			{
+				System.err.println("BigImage is enabled.");
+				UseBigImage = true;
+			}
+
+			AppGameContainer AppContainer = (AppGameContainer) container;
+
+			AppContainer.setForceExit(false);
+			if (game.gameOptions.displayLimitFPS == true)
+				container.setTargetFrameRate(GameEngine.TargetFPS);
+			container.setUpdateOnlyWhenVisible(false);
+			container.getInput().enableKeyRepeat(350, 70);
+			container.setShowFPS(false);
+			container.setMaximumLogicUpdateInterval(GameEngine.MaxDelta);
+			container.setClearEachFrame(false);
+			container.setSoundOn(false);
+			container.setMusicOn(false);
+			container.setVSync(false);
+
+			if (game.gameOptions.mouseGrabbed == true)
+				container.setMouseGrabbed(true);
+
+			game.gameNetCode.SendTCPPing();
+
+			String GLDisplayAdapter = GL11.glGetString(GL11.GL_RENDERER);
+			String GLDisplayVendor = GL11.glGetString(GL11.GL_VENDOR);
+			String GLDisplayVersion = GL11.glGetString(GL11.GL_VERSION);
+
+			if (GLDisplayAdapter.compareTo("GDI Generic") == 0)
+			{
+				System.err.println(
+						"Spark has detected that it cannot run in OpenGL mode.");
+				game.CloseMessage = "Spark has detected that it cannot run in OpenGL mode.\n\nThis can usually be resolved by installing the latest drivers for your video card.\n\nIf you are certain you have the latest drivers, you will have to run Spark using Java2D.\nThis will now be done automatically for you.  Please try joining a game again now.";
+				game.gameOptions.engineMode = "java2d";
+				game.gameOptions.saveOptions();
+				game.destroy();
+			}
+
+			System.err.println("OpenGL Display Adapter: " + GLDisplayAdapter);
+			System.err.println("OpenGL Display Vendor: " + GLDisplayVendor);
+			System.err.println("OpenGL Display Version: " + GLDisplayVersion);
+			System.err.println(
+					"Maximum Texture Size Supported: " + MaximumTextureSize);
+
+			if (game.gameNetLinkLobby != null)
+			{
+				game.gameNetLinkLobby.SendTCP("systemInfo |&"
+						+ game.OperatingSystem + "|&" + game.SystemArchitecture
+						+ "|&" + game.JavaVersion + "|&" + GLDisplayAdapter
+						+ "|&" + GLDisplayVendor + "|&" + GLDisplayVersion
+						+ "|&" + MaximumTextureSize + "|&"
+						+ game.HardwareDriverDate + "|&"
+						+ game.HardwareDisplayDevice + "|&"
+						+ game.HardwareDisplayService + "|&"
+						+ game.HardwareCPUName + "|&" + game.HardwareCPUSpeed
+						+ "|&" + game.HardwareCPUVendor + "|&"
+						+ game.HardwareCPUCount);
+			}
+
+			Font tempChatFont = null;
+			try
+			{
+				if (game.gameOptions.fontChatBold == false)
+				{
+					tempChatFont = new Font(game.gameOptions.fontChat,
+							Font.PLAIN, game.gameOptions.fontChatSize);
+				}
+				else
+				{
+					tempChatFont = new Font(game.gameOptions.fontChat,
+							Font.BOLD, game.gameOptions.fontChatSize);
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				try
+				{
+					tempChatFont = Font
+							.createFont(Font.TRUETYPE_FONT,
+									new FileInputStream(
+											"portal/fonts/verdana.ttf"))
+							.deriveFont(11.0f);
+				}
+				catch (Exception ee)
+				{
+
+				}
+			}
+
+			Font tempNameFont = null;
+			try
+			{
+				if (game.gameOptions.fontNameBold == false)
+				{
+					tempNameFont = new Font(game.gameOptions.fontName,
+							Font.PLAIN, game.gameOptions.fontNameSize);
+				}
+				else
+				{
+					tempNameFont = new Font(game.gameOptions.fontName,
+							Font.BOLD, game.gameOptions.fontNameSize);
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				try
+				{
+					tempNameFont = Font
+							.createFont(Font.TRUETYPE_FONT,
+									new FileInputStream(
+											"portal/fonts/verdana.ttf"))
+							.deriveFont(9.0f);
+				}
+				catch (Exception ee)
+				{
+
+				}
+			}
+			try
+			{
+				slickEngine.slickResources.fonts[GameResources.fontName] = new TrueTypeFont(
+						tempNameFont, game.gameOptions.fontAntiAliasing);
+				slickEngine.slickResources.fonts[GameResources.fontChat] = new TrueTypeFont(
+						tempChatFont, game.gameOptions.fontAntiAliasing);
+			}
+			catch (Exception e)
+			{
+				game.throwException(e);
+			}
+
+			try
+			{
+				if (game.gameOptions.displayDisableFarplane == false)
+				{
+					System.err.println("Loading Farplane..");
+					if (UseBigImage == true)
+						slickEngine.slickResources.images[GameResources.imgFarplane] = new BigImage(
+								"spark/images/imgFarplane.png");
+					else
+						slickEngine.slickResources.images[GameResources.imgFarplane] = new Image(
+								"spark/images/imgFarplane.png");
+				}
+			}
+			catch (Exception e)
+			{
+				game.throwException(e);
+			}
+
+			game.gameNetCode.SendTCPPing();
+
+			LoadingList.setDeferredLoading(true);
+
+			try
+			{
+				System.err.println("Loading Mr Bandwidth..");
+				if (UseBigImage == true)
+					slickEngine.slickResources.images[GameResources.imgMrBandwidth] = new BigImage(
+							"spark/images/imgMrBandwidth.png");
+				else
+					slickEngine.slickResources.images[GameResources.imgMrBandwidth] = new Image(
+							"spark/images/imgMrBandwidth.png");
+
+				System.err.println("Loading Tuna...");
+				if (UseBigImage == true)
+					slickEngine.slickResources.images[GameResources.imgTuna] = new BigImage(
+							"spark/images/imgTuna.png");
+				else
+					slickEngine.slickResources.images[GameResources.imgTuna] = new Image(
+							"spark/images/imgTuna.png");
+
+				System.err.println("Loading Tiles..");
+				if (UseBigImage == true)
+					slickEngine.slickResources.images[GameResources.imgTiles] = new BigImage(
+							"spark/images/imgTiles.png");
+				else
+					slickEngine.slickResources.images[GameResources.imgTiles] = new Image(
+							"spark/images/imgTiles.png");
+			}
+			catch (Exception e)
+			{
+				game.throwException(e);
+			}
+
+			game.gameNetCode.SendTCPPing();
+		}
+		catch (Exception e)
+		{
+			game.throwException(e);
+		}
+	}
+
+	public final void render(GameContainer container, Graphics g)
+	{
+		this.g = g;
+
+		game.drawGame();
+	}
+
+	public final void update(GameContainer container, int delta)
+			throws SlickException
+	{
+		game.gameInput.MouseX = container.getInput().getMouseX();
+		game.gameInput.MouseY = container.getInput().getMouseY();
+
+		if (game.LoadingResources == false)
+		{
+			game.updateGame(delta);
+		}
+		else
+		{
+			if (nextResource != null)
+			{
+				try
+				{
+					game.LoadString = "Loading: "
+							+ nextResource.getDescription();
+					nextResource.load();
+				}
+				catch (IOException e)
+				{
+					throw new SlickException(
+							"Failed to load: " + nextResource.getDescription(),
+							e);
+				}
+
+				nextResource = null;
+			}
+
+			game.LoadTotal = LoadingList.get().getTotalResources();
+			game.LoadProgress = LoadingList.get().getTotalResources()
+					- LoadingList.get().getRemainingResources();
+
+			if (LoadingList.get().getRemainingResources() > 0)
+			{
+				nextResource = LoadingList.get().getNext();
+			}
+			else
+			{
+				game.LoadingResources = false;
+				game.gameNetCode.SendTCP("joinGame");
+			}
+		}
+	}
+
+	public final void keyPressed(int key, char c)
+	{
+		game.gameQueue.add(new KeyboardEvent(SparkEvents.E_KEYDOWN, key, c));
+	}
+
+	public final void keyReleased(int key, char c)
+	{
+		game.gameQueue.add(new KeyboardEvent(SparkEvents.E_KEYUP, key, c));
+	}
+
+	public final void mousePressed(int button, int x, int y)
+	{
+		game.gameQueue.add(
+				new MousePressEvent(SparkEvents.E_MOUSEDOWN, button, x, y));
+	}
+
+	public final void mouseReleased(int button, int x, int y)
+	{
+		game.gameQueue
+				.add(new MousePressEvent(SparkEvents.E_MOUSEUP, button, x, y));
+	}
+
+	public final void mouseWheelMoved(int change)
+	{
+		if (change < 0)
+		{
+			game.gameInput.processClick(5);
+		}
+		if (change > 0)
+		{
+			game.gameInput.processClick(4);
+		}
+	}
+}

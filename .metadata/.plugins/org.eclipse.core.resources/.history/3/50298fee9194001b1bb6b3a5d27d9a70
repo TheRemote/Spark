@@ -1,0 +1,603 @@
+package codemallet.spark.net;
+
+import java.awt.Color;
+import java.util.StringTokenizer;
+
+import codemallet.spark.Spark;
+import codemallet.spark.map.Flag;
+import codemallet.spark.map.FlagPole;
+import codemallet.spark.map.Map;
+import codemallet.spark.map.Switch;
+
+public class NetProcessor
+{
+	Spark game;
+
+	NetProcessor(Spark game)
+	{
+		this.game = game;
+	}
+
+	public void doCommand(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		String command = st.nextToken();
+		if (command.startsWith("create"))
+			createPlayer(line.trim());
+		else if (command.startsWith("pong"))
+			game.gameNetCode.ReceiveUDPPing();
+		else if (command.startsWith("tcppong"))
+			game.gameNetCode.ReceiveTCPPing();
+		else if (command.startsWith("movement"))
+			processMovement(line.trim());
+		else if (command.startsWith("laser"))
+			processLaser(line.trim());
+		else if (command.startsWith("missile"))
+			processMissile(line.trim());
+		else if (command.startsWith("grenade"))
+			processGrenade(line.trim());
+		else if (command.startsWith("bouncy"))
+			processBouncy(line.trim());
+		else if (command.startsWith("move"))
+			processMove(line.trim());
+		else if (command.startsWith("warp"))
+			processWarp(line.trim());
+		else if (command.startsWith("holdpen"))
+			processHoldPen(line.trim());
+		else if (command.startsWith("spawn"))
+			processSpawn(line.trim());
+		else if (command.startsWith("death"))
+			processDeath(line.trim());
+		else if (command.startsWith("smoking"))
+			processSmoking(line.trim());
+		else if (command.startsWith("remove"))
+			removePlayer(line.trim());
+		else if (command.equals("joinGame"))
+			joinGame(line.trim());
+		else if (command.startsWith("joinedGame"))
+			joinedGame(line.trim());
+		else if (command.startsWith("broadcast"))
+			processBroadcast(line.trim());
+		else if (command.startsWith("recharge"))
+			processRecharge(line.trim());
+		else if (command.startsWith("version"))
+			processVersion();
+		else if (command.startsWith("flag"))
+			processFlag(line.trim());
+		else if (command.startsWith("switch"))
+			processSwitch(line.trim());
+		else if (command.startsWith("win"))
+			processWin(line.trim());
+		else if (command.startsWith("score"))
+			processScore(line.trim());
+		else if (command.startsWith("team"))
+			processTeam(line.trim());
+		else
+			System.out.println("Command unrecognized - " + line);
+
+	}
+
+	private void createPlayer(String line)
+	{
+		java.util.StringTokenizer st;
+		String userName;
+		byte Index;
+		byte Team;
+		byte Score;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		userName = st.nextToken();
+		Index = Byte.parseByte(st.nextToken());
+		Team = Byte.parseByte(st.nextToken());
+		Score = Byte.parseByte(st.nextToken());
+		game.panel.gamePlayers.addPlayer(Index, userName, Team, Score);
+	}
+
+	private void removePlayer(String line)
+	{
+		java.util.StringTokenizer st;
+		byte Index;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		Index = Byte.parseByte(st.nextToken());
+		game.panel.gamePlayers.removePlayer(Index);
+	}
+
+	private void joinGame(String line)
+	{
+		java.util.StringTokenizer st;
+		byte Index;
+		byte Team;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		Index = Byte.parseByte(st.nextToken());
+		Team = Byte.parseByte(st.nextToken());
+		game.panel.gameMap = new Map(game.panel, st.nextToken());
+		game.panel.gameWeapons.CalculateDamage();
+		game.panel.gamePlayer.Index = Index;
+		game.panel.gamePlayer.Team = Team;
+		game.panel.gamePlayer.Name = game.panel.gamePlayers.getName(Index);
+		game.panel.gamePlayers.PrintWhoData();
+		game.panel.gameSound.playSound("sndWelcome");
+		game.panel.setRunning(true);
+	}
+
+	private void joinedGame(String line)
+	{
+		java.util.StringTokenizer st;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		byte Team = Byte.parseByte(st.nextToken());
+		game.panel.gamePlayers.setScore(Index, (byte) 0);
+		game.panel.gamePlayers.setTeam(Index, Team);
+		game.panel.gamePlayers.setSmoking(Index, false);
+		game.panel.gameChat.AddMessage(game.panel.gamePlayers.getName(Index)
+				+ " has joined!", game.panel.gameChat.getColor(Team));
+	}
+
+	private void processMovement(String line)
+	{
+		java.util.StringTokenizer st;
+		byte Index;
+		short X;
+		short Y;
+		short MoveX;
+		short MoveY;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		Index = Byte.parseByte(st.nextToken());
+		X = Short.parseShort(st.nextToken());
+		Y = Short.parseShort(st.nextToken());
+		MoveX = Short.parseShort(st.nextToken());
+		MoveY = Short.parseShort(st.nextToken());
+		game.panel.gamePlayers.setX(Index, (float) X);
+		game.panel.gamePlayers.setY(Index, (float) Y);
+		game.panel.gamePlayers.setMoveX(Index, MoveX);
+		game.panel.gamePlayers.setMoveY(Index, MoveY);
+	}
+
+	private void processBroadcast(String line)
+	{
+		java.util.StringTokenizer st;
+		String token1;
+		byte Index;
+		String Message;
+		st = new java.util.StringTokenizer(line);
+		token1 = st.nextToken();
+		Index = Byte.parseByte(st.nextToken());
+		Message = game.panel.gamePlayers.getName(Index);
+		Message = Message + ": ";
+		Message = Message + line.substring(token1.length() + 2, line.length());
+		game.panel.gameChat.AddMessage(Message, game.panel.gameChat
+				.getColor(game.panel.gamePlayers.getTeam(Index)));
+	}
+
+	private void processLaser(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		double Angle = Double.parseDouble(st.nextToken());
+		game.panel.gameLasers.addLaser((double) X, (double) Y, Angle, Index);
+		game.panel.gameSound.playLaser(X, Y);
+	}
+
+	private void processMissile(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		double Angle = Double.parseDouble(st.nextToken());
+		game.panel.gameMissiles
+				.addMissile((double) X, (double) Y, Angle, Index);
+		game.panel.gameSound.playMissile(X, Y);
+	}
+
+	private void processGrenade(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		double Angle = Double.parseDouble(st.nextToken());
+		short TargetX = Short.parseShort(st.nextToken());
+		short TargetY = Short.parseShort(st.nextToken());
+		game.panel.gameGrenades.addGrenade((double) ((float) X),
+				(double) ((float) Y), (double) ((float) TargetX),
+				(double) ((float) TargetY), Angle, Index);
+		game.panel.gameSound.playGrenade(X, Y);
+	}
+
+	private void processBouncy(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		double Angle = Double.parseDouble(st.nextToken());
+		game.panel.gameBouncies.addBounce((double) X, (double) Y, Angle, Index);
+		game.panel.gameSound.playBouncy(X, Y);
+	}
+
+	private void processHoldPen(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		if (Index == game.panel.gamePlayer.Index)
+		{
+			game.panel.gamePlayer.Dead = false;
+			game.panel.gamePlayer.HoldingPen = true;
+			game.panel.gameWeapons.Energy = game.panel.gameWeapons.MaxEnergy;
+			game.panel.gameWeapons.Health = game.panel.gameWeapons.MaxHealth;
+			game.panel.gamePlayer.Smoking = false;
+			game.panel.gamePlayer.timeHoldingPen = game.panel.Tick
+					+ ((long) (game.panel.gameMap.GameMap.holdingTime * 1000));
+			game.panel.gamePlayers.setDead(game.panel.gamePlayer.Index, false);
+			game.panel.gamePlayer.X = (float) ((X * 16) - 8);
+			game.panel.gamePlayer.Y = (float) ((Y * 16) - 8);
+		}
+		else
+		{
+			game.panel.gamePlayers.setX(Index, X);
+			game.panel.gamePlayers.setY(Index, Y);
+			game.panel.gamePlayers.setDead(Index, false);
+			game.panel.gamePlayers.setSmoking(Index, false);
+			game.panel.gamePlayers.setHoldPen(Index, true);
+		}
+	}
+
+	private void processSpawn(String line)
+	{
+		java.util.StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+
+		byte Index = Byte.parseByte(st.nextToken());
+		if (Index == game.panel.gamePlayer.Index)
+		{
+			game.panel.gamePlayer.HoldingPen = false;
+			game.panel.gameSound.playSound("sndSpawn");
+			game.panel.gameWeapons.MissileRecharge = 0;
+			game.panel.gameWeapons.MissileCharges = 0;
+			game.panel.gameWeapons.GrenadeRecharge = 0;
+			game.panel.gameWeapons.GrenadeCharges = 0;
+			game.panel.gameWeapons.BouncyRecharge = 0;
+			game.panel.gameWeapons.BouncyCharges = 0;
+		}
+		else
+		{
+			game.panel.gamePlayers.setHoldPen(Index, false);
+		}
+	}
+
+	private void processDeath(String line)
+	{
+		java.util.StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+
+		byte Index = Byte.parseByte(st.nextToken());
+		byte Killer = Byte.parseByte(st.nextToken());
+		if (Index == game.panel.gamePlayer.Index)
+		{
+			game.panel.gamePlayer.Dead = true;
+			game.panel.gameExplosions.addExplosion(
+					(short) (game.panel.gamePlayer.X - 16),
+					(short) (game.panel.gamePlayer.Y - 16), (short) (2));
+			game.panel.gameSound.playExplosion(
+					(short) (game.panel.gamePlayer.X - 16),
+					(short) (game.panel.gamePlayer.Y - 16));
+			game.panel.gameWeapons.Health = 0;
+			game.panel.gameWeapons.Energy = 0;
+			game.panel.gamePlayers.setDead(game.panel.gamePlayer.Index, true);
+		}
+		if (Killer == game.panel.gamePlayer.Index)
+		{
+			game.panel.gameWeapons.addHealthBonus();
+		}
+		if (Index != Killer)
+		{
+			game.panel.gameChat.Add3PartMessage(game.panel.gamePlayers
+					.getName(Killer), " destroyed ", game.panel.gamePlayers
+					.getName(Index), game.panel.gameChat
+					.getColor(game.panel.gamePlayers.getTeam(Killer)),
+					Color.white, game.panel.gameChat
+							.getColor(game.panel.gamePlayers.getTeam(Index)));
+		}
+		short X = (short) ((int) game.panel.gamePlayers.getX(Index));
+		short Y = (short) ((int) game.panel.gamePlayers.getY(Index));
+		game.panel.gamePlayers.setDead(Index, true);
+		game.panel.gamePlayers.setSmoking(Index, false);
+		game.panel.gameSound.playExplosion(X, Y);
+		game.panel.gameExplosions.addExplosion((short) (X - 16),
+				(short) (Y - 16), (short) 2);
+	}
+
+	private void processRecharge(String line)
+	{
+		if (game.panel == null) return;
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte MissileRecharge = Byte.parseByte(st.nextToken());
+		byte MissileCharges = Byte.parseByte(st.nextToken());
+		byte GrenadeRecharge = Byte.parseByte(st.nextToken());
+		byte GrenadeCharges = Byte.parseByte(st.nextToken());
+		byte BouncyRecharge = Byte.parseByte(st.nextToken());
+		byte BouncyCharges = Byte.parseByte(st.nextToken());
+		game.panel.gameWeapons.MissileRecharge = MissileRecharge;
+		game.panel.gameWeapons.MissileCharges = MissileCharges;
+		game.panel.gameWeapons.GrenadeRecharge = GrenadeRecharge;
+		game.panel.gameWeapons.GrenadeCharges = GrenadeCharges;
+		game.panel.gameWeapons.BouncyRecharge = BouncyRecharge;
+		game.panel.gameWeapons.BouncyCharges = BouncyCharges;
+	}
+
+	private void processSmoking(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		byte Smoking = Byte.parseByte(st.nextToken());
+		if (Smoking == 1)
+		{
+			game.panel.gamePlayers.setSmoking(Index, true);
+		}
+		else
+		{
+			game.panel.gamePlayers.setSmoking(Index, false);
+		}
+	}
+
+	private void processVersion()
+	{
+		try
+		{
+			game.gameNetCode.in.close();
+		}
+		catch (Exception e)
+		{
+		}
+		javax.swing.JOptionPane.showMessageDialog(game.frame,
+				"Your version is outdated!");
+	}
+
+	synchronized private void processWin(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Team = Byte.parseByte(st.nextToken());
+		game.panel.gameSound.addWin(Team);
+		game.panel.gameMap = new Map(game.panel, game.panel.gameMap.MapFile);
+		game.panel.gameWeapons.CalculateDamage();
+	}
+
+	private void processFlag(String line)
+	{
+		StringTokenizer st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte FlagIndex = Byte.parseByte(st.nextToken());
+		byte EventType = Byte.parseByte(st.nextToken());
+		Flag flag = (codemallet.spark.map.Flag) game.panel.gameMap.Flags
+				.get(FlagIndex);
+		FlagPole flagpole;
+		byte Index = 0;
+		byte PoleIndex = 0;
+		{
+			switch (EventType)
+			{
+			case 0: // Flag Captured
+				Index = Byte.parseByte(st.nextToken());
+				PoleIndex = Byte.parseByte(st.nextToken());
+				flagpole = (codemallet.spark.map.FlagPole) game.panel.gameMap.FlagPoles
+						.get(PoleIndex);
+				flagpole.hasFlag = false;
+				flag.onPlayer = true;
+				flag.onGround = false;
+				flag.onPole = false;
+				flag.PlayerIndex = Index;
+				game.panel.gamePlayers.setHasFlag(Index, true, FlagIndex);
+				game.panel.gameMap.GameMap.MapData[(flagpole.Y * game.panel.gameMap.GameMap.width)
+						+ flagpole.X] = game.panel.gameMap.getEmptyTile(
+						flagpole.Team, flagpole.FlagType);
+				game.panel.gameSound.addFlagCaptured(flag.Team,
+						(byte) game.panel.gamePlayers.getTeam(Index));
+				break;
+			case 1: // Flag Returned
+				Index = Byte.parseByte(st.nextToken());
+				PoleIndex = Byte.parseByte(st.nextToken());
+				flagpole = (codemallet.spark.map.FlagPole) game.panel.gameMap.FlagPoles
+						.get(PoleIndex);
+				flagpole.hasFlag = true;
+				flag.onPlayer = false;
+				flag.onGround = false;
+				flag.onPole = true;
+				flag.PoleIndex = PoleIndex;
+				game.panel.gamePlayers.setHasFlag(Index, false, FlagIndex);
+				game.panel.gameMap.GameMap.MapData[(flagpole.Y * game.panel.gameMap.GameMap.width)
+						+ flagpole.X] = game.panel.gameMap.getFlagTile(
+						flagpole.Team, flag.Team);
+				game.panel.gameSound.addFlagReturned(flag.Team,
+						(byte) game.panel.gamePlayers.getTeam(Index));
+				break;
+			case 2: // Flag on Pole
+				PoleIndex = Byte.parseByte(st.nextToken());
+				flagpole = (codemallet.spark.map.FlagPole) game.panel.gameMap.FlagPoles
+						.get(PoleIndex);
+				flagpole.hasFlag = true;
+				flagpole.FlagIndex = FlagIndex;
+				flag.onPole = true;
+				flag.onGround = false;
+				flag.onPlayer = false;
+				flag.PoleIndex = PoleIndex;
+				game.panel.gameMap.GameMap.MapData[(flagpole.Y * game.panel.gameMap.GameMap.width)
+						+ flagpole.X] = game.panel.gameMap.getFlagTile(
+						flagpole.Team, flag.Team);
+				break;
+			case 3: // Flag on Ground
+				flag.X = (float) Short.parseShort(st.nextToken());
+				flag.Y = (float) Short.parseShort(st.nextToken());
+				flag.onPole = false;
+				flag.onGround = true;
+				flag.onPlayer = false;
+				break;
+			case 4: // Flag on Player
+				Index = Byte.parseByte(st.nextToken());
+				flag.onPole = false;
+				flag.onGround = false;
+				flag.onPlayer = true;
+				flag.PlayerIndex = Index;
+				game.panel.gamePlayers.setHasFlag(Index, true, FlagIndex);
+				break;
+			case 5: // Flag Dropped
+				flag.X = (float) Short.parseShort(st.nextToken());
+				flag.Y = (float) Short.parseShort(st.nextToken());
+				flag.onPole = false;
+				flag.onGround = true;
+				flag.onPlayer = false;
+				game.panel.gamePlayers.setHasFlag(flag.PlayerIndex, false,
+						FlagIndex);
+				game.panel.gameChat.Add3PartMessage(game.panel.gamePlayers.getName(flag.PlayerInadex), " dropped the ", "not-a-team's ", "flag", game.panel.gameChat.getColor(game.panel.gamePlayers.getTeam(flag.PlayerIndex)), Color.white, game.panel.gameChat.getColor(flag.Team), Color.white);
+				game.panel.gameSound.playSound("sndDropFlag");
+				break;
+			case 6: // Flag Picked Up
+				Index = Byte.parseByte(st.nextToken());
+				flag.onPlayer = true;
+				flag.onGround = false;
+				flag.onPole = false;
+				flag.PlayerIndex = Index;
+				game.panel.gameSound.addFlagCaptured(flag.Team,
+						(byte) game.panel.gamePlayers.getTeam(Index));
+				game.panel.gamePlayers.setHasFlag(Index, true, FlagIndex);
+			}
+		}
+	}
+
+	private void processScore(String line)
+	{
+		java.util.StringTokenizer st;
+		byte Index;
+		byte Score;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		Index = Byte.parseByte(st.nextToken());
+		Score = Byte.parseByte(st.nextToken());
+		game.panel.gamePlayers.setScore(Index, Score);
+		if (Index == game.panel.gamePlayer.Index)
+		{
+			game.panel.gamePlayer.Score = Score;
+		}
+	}
+
+	private void processTeam(String line)
+	{
+		java.util.StringTokenizer st;
+		st = new java.util.StringTokenizer(line);
+		st.nextToken();
+		byte Index = Byte.parseByte(st.nextToken());
+		byte Team = Byte.parseByte(st.nextToken());
+		game.panel.gamePlayers.setTeam(Index, Team);
+		if (Index == game.panel.gamePlayer.Index)
+		{
+			game.panel.gamePlayer.Team = Team;
+		}
+		switch (Team)
+		{
+		case 0:
+			game.panel.gameChat.AddMessage(game.panel.gamePlayers
+					.getName(Index)
+					+ " joined the Green Team", Color.green);
+			break;
+		case 1:
+			game.panel.gameChat.AddMessage(game.panel.gamePlayers
+					.getName(Index)
+					+ " joined the Red Team", Color.red);
+			break;
+		case 2:
+			game.panel.gameChat.AddMessage(game.panel.gamePlayers
+					.getName(Index)
+					+ " joined the Blue Team", Color.blue);
+			break;
+		case 3:
+			game.panel.gameChat.AddMessage(game.panel.gamePlayers
+					.getName(Index)
+					+ " joined the Yellow Team", Color.yellow);
+			break;
+		}
+	}
+
+	private void processWarp(String line)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		st.nextToken();
+
+		byte Index = Byte.parseByte(st.nextToken());
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		if (Index == game.panel.gamePlayer.Index)
+		{
+			game.panel.gameSound.playSound("sndWarp");
+			game.panel.gamePlayer.Frozen = true;
+			game.panel.gamePlayer.WarpEffect = 32;
+			game.panel.gamePlayer.X = (float) ((X * 16) - 8);
+			game.panel.gamePlayer.Y = (float) ((Y * 16) - 8);
+		}
+		else
+		{
+			game.panel.gamePlayers.setX(Index, ((X * 16) - 8));
+			game.panel.gamePlayers.setY(Index, ((Y * 16) - 8));
+			game.panel.gamePlayers.setWarpEffect(Index);
+		}
+	}
+
+	private void processMove(String line)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		st.nextToken();
+
+		game.panel.gamePlayer.Frozen = false;
+		game.panel.gamePlayer.WarpEffect = 0;
+		short X = Short.parseShort(st.nextToken());
+		short Y = Short.parseShort(st.nextToken());
+		game.panel.gamePlayer.X = (float) ((X * 16) - 8);
+		game.panel.gamePlayer.Y = (float) ((Y * 16) - 8);
+	}
+
+	private void processSwitch(String line)
+	{
+		StringTokenizer st = new StringTokenizer(line);
+		st.nextToken();
+
+		byte SwitchIndex = Byte.parseByte(st.nextToken());
+		byte EventType = Byte.parseByte(st.nextToken());
+		Switch Switch = game.panel.gameMap.Switches.get(SwitchIndex);
+		byte Index = 0;
+		byte Team = 0;
+		{
+			switch (EventType)
+			{
+			case 0: // Switch flipped by
+				Index = Byte.parseByte(st.nextToken());
+				Team = game.panel.gamePlayers.getTeam(Index);
+				Switch.Team = Team;
+				game.panel.gameMap.GameMap.MapData[(Switch.Y * game.panel.gameMap.GameMap.width)
+						+ Switch.X] = 32892 + Team;
+				game.panel.gameSound.addSwitchFlipped(Index);
+				break;
+			case 1: // Switch team
+				Team = Byte.parseByte(st.nextToken());
+				Switch.Team = Team;
+				game.panel.gameMap.GameMap.MapData[(Switch.Y * game.panel.gameMap.GameMap.width)
+						+ Switch.X] = 32892 + Team;
+				break;
+			}
+		}
+	}
+}

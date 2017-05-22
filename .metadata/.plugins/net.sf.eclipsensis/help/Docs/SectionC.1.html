@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+<title>Get parent directory</title>
+<meta name="generator" content="Halibut version 1.0 (NSIS Custom Build) xhtml-backend" />
+<link rel="stylesheet" href="style.css" type='text/css' /><script language="JavaScript" type="text/javascript" src="chmlink.js"></script>
+</head>
+
+<body>
+<p><a href='AppendixC.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='SectionC.2.html'>Next</a></p>
+<a name="C.1"></a><h2>C.1 Get parent directory</h2>
+<pre> ; GetParent
+ ; input, top of stack  (e.g. C:\Program Files\Poop)
+ ; output, top of stack (replaces, with e.g. C:\Program Files)
+ ; modifies no other variables.
+ ;
+ ; Usage:
+ ;   Push &quot;C:\Program Files\Directory\Whatever&quot;
+ ;   Call GetParent
+ ;   Pop $R0
+ ;   ; at this point $R0 will equal &quot;C:\Program Files\Directory&quot;
+
+ Function GetParent
+ 
+   Exch $R0
+   Push $R1
+   Push $R2
+   Push $R3
+   
+   StrCpy $R1 0
+   StrLen $R2 $R0
+   
+   loop:
+     IntOp $R1 $R1 + 1
+     IntCmp $R1 $R2 get 0 get
+     StrCpy $R3 $R0 1 -$R1
+     StrCmp $R3 &quot;\&quot; get
+     Goto loop
+   
+   get:
+     StrCpy $R0 $R0 -$R1
+     
+     Pop $R3
+     Pop $R2
+     Pop $R1
+     Exch $R0
+     
+ FunctionEnd
+</pre>
+<p><a href='AppendixC.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='SectionC.2.html'>Next</a></p>
+
+<hr />
+
+<address>
+</address>
+</body>
+
+</html>

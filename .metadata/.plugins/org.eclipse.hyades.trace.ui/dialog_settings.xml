@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="TraceNavigator">
+		<item value="false" key="LINK_NAVIGATOR_TO_EDITOR"/>
+	</section>
+</section>

@@ -1,0 +1,9 @@
+Spark Version: 1.35
+Java Version: 1.6.0_03
+Operating System: Windows XP
+System Architecture: x86
+Hardware Display Device: NVIDIA GeForce 8600M GT
+Hardware Display Service: nv4_disp
+Hardware Display Driver Date: 10/4/07
+Unable to connect to the server - Connection refused: connect
+Main UDP connection closed.

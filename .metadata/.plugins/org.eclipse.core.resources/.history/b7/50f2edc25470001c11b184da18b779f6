@@ -1,0 +1,6 @@
+package codemallet.hub.net;
+
+public class NetHandler
+{
+
+}

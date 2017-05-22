@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="Z:/Code/Portal/ReleaseFiles/sparkservernodist.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/Server/SparkServerNoDist.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/Server/MANIFESTS.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=Server/&lt;codemallet.spark.server.map"/>
+        <javaElement handleIdentifier="=Server/&lt;codemallet.spark.server.net"/>
+        <javaElement handleIdentifier="=Server/&lt;codemallet.spark.server"/>
+        <javaElement handleIdentifier="=Server/&lt;codemallet.spark.server.player"/>
+    </selectedElements>
+</jardesc>

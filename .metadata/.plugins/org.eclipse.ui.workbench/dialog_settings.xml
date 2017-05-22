@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.internal.dialogs.WorkbenchEditorsDialog">
+	</section>
+	<section name="WorkbenchPreferenceDialogSettings">
+		<item value="4" key="DIALOG_Y_ORIGIN"/>
+		<item value="27" key="DIALOG_X_ORIGIN"/>
+	</section>
+	<section name="NewWizardAction">
+	</section>
+	<section name="ShowViewDialog">
+		<item value="net.sourceforge.metrics.ui.MetricsView" key="ShowViewDialog.STORE_SELECTED_VIEW_ID"/>
+		<list key="ShowViewDialog.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="net.sourceforge.metrics"/>
+		</list>
+	</section>
+	<section name="ImportExportAction">
+		<item value="org.eclipse.jdt.internal.ui.jarpackager.JarPackageWizard" key="ImportExportPage.STORE_SELECTED_EXPORT_WIZARD_ID"/>
+		<list key="ImportExportPage.STORE_EXPANDED_EXPORT_CATEGORIES">
+			<item value="org.eclipse.ui.Basic"/>
+			<item value="org.eclipse.jdt.ui.Java"/>
+			<item value="org.eclipse.team.ui.exportWizards"/>
+		</list>
+	</section>
+</section>

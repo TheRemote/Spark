@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="images/|maps/|sounds/" kind="src" path=""/>
+	<classpathentry kind="lib" path="lwjgl.jar"/>
+	<classpathentry kind="lib" path="slick.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="xSocket.jar"/>
+	<classpathentry kind="lib" path="C:/Dev/Spark Project/Spark/Spark/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="C:/Dev/Spark Project/Spark/Spark/jorbis-0.0.15.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

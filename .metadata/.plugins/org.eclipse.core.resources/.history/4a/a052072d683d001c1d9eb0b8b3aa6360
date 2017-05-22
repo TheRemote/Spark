@@ -1,0 +1,151 @@
+package codemallet.spark.server;
+
+import java.net.DatagramSocket;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+
+import codemallet.spark.server.map.Map;
+import codemallet.spark.server.net.NetPingPort;
+import codemallet.spark.server.net.NetProcessor;
+import codemallet.spark.server.net.NetTCP;
+import codemallet.spark.server.net.NetUDP;
+import codemallet.spark.server.player.PlayerList;
+
+public class Server
+{
+	public Lock lock = new ReentrantLock();
+	
+	public static String Version = "1.22";
+
+	public static final String HOST = "localhost";
+
+	int Port;
+
+	public int PingPort;
+
+	public PlayerList players;
+
+	public ServerEngine engine;
+
+	public NetProcessor netProcessor = new NetProcessor(this);
+
+	public Map map;
+
+	public boolean running;
+
+	public NetUDP netudp;
+	
+	public NetPingPort netPingPort;
+
+	public DatagramSocket udp;
+
+	public SSLServerSocket serverSock;
+
+	public long Tick;
+
+	public int TeamScores[] = new int[4];
+
+	public Server(int Port, int PingPort, int Resolution, String Map)
+	{
+		System.setProperty("javax.net.ssl.keyStore", "Keystore");
+		System.setProperty("javax.net.ssl.keyStorePassword", "SparkPubKey");
+
+		this.Port = Port;
+		this.PingPort = PingPort;
+		running = true;
+
+		map = new Map(this, Map);
+
+		players = new PlayerList(this);
+		engine = new ServerEngine(this);
+		engine.startEngine();
+
+		try
+		{
+			udp = new DatagramSocket(Port);
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error creating UDP socket: " + e.toString());
+		}
+
+		netudp = new NetUDP(this, udp);
+		netudp.start();
+		
+		netPingPort = new NetPingPort(this);
+		netPingPort.start();
+
+		try
+		{
+			SSLServerSocketFactory sslSrvFact = (SSLServerSocketFactory) SSLServerSocketFactory
+					.getDefault();
+			serverSock = (SSLServerSocket) sslSrvFact.createServerSocket(Port);
+
+			SSLSocket clientSock;
+			while (running == true)
+			{
+				System.out.println("Waiting for a client...");
+				clientSock = (SSLSocket) serverSock.accept();
+				new NetTCP(clientSock, this).start();
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+
+		running = false;
+	}
+
+	public static void main(String args[])
+	{
+		try
+		{
+			int Port = Integer.parseInt(args[0]);
+			int PingPort = Integer.parseInt(args[1]);
+			int Resolution = Integer.parseInt(args[2]);
+			String Map = args[3];
+
+			new Server(Port, PingPort, Resolution, Map);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	public void Close()
+	{
+		running = false;
+
+		try
+		{
+			serverSock.close();
+		}
+		catch (Exception e)
+		{
+
+		}
+		try
+		{
+			udp.close();
+		}
+		catch (Exception e)
+		{
+
+		}
+		try
+		{
+			netPingPort.udp.close();
+		}
+		catch (Exception e)
+		{
+
+		}
+	}
+}

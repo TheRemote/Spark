@@ -1,0 +1,303 @@
+/*
+ * @(#)GraphicsPerformancePanel.java  2.2  2006-03-23
+ *
+ * Copyright (c) 2006 Werner Randelshofer
+ * Staldenmattweg 2, Immensee, CH-6405, Switzerland.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Werner Randelshofer. ("Confidential Information").  You shall not
+ * disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Werner Randelshofer.
+ */
+
+package test;
+
+import ch.randelshofer.awt.graphics.*;
+import java.beans.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.lang.reflect.*;
+/**
+ * GraphicsPerformancePanel.
+ *
+ * @author  Werner Randelshofer
+ * @version 2.2 2006-03-23 Switch acceleration explitly off on Java 1.5 by
+ * invoking setAccelerationPriority(0f) on it.
+ * <br>2.1 2006-03-22 Explicitly create a BufferedImage of type INT_RGB
+ * for all renderers.
+ * 2.0.2 2006-03-07 Use immediate painting on a worker thread instead
+ * of using a Timer and painting on the EDT. Use BufferedImage instead of
+ * VolatileImage for Java2D rendering. Temporily deactivaed concurrent renderer.
+ * <br>1.0 March 5, 2006 Created.
+ */
+public class GraphicsPerformancePanel extends javax.swing.JPanel {
+    private Painter painter;
+    private BufferedImage image;
+    private Graphics2D graphics;
+    private volatile Thread worker;
+    public final static int JAVA2D = 0;
+    public final static int SINGLE_THREADED = 1;
+    public final static int CONCURRENT = 2;
+    private int renderer = JAVA2D;
+    private int currentRenderer = -1;
+    int shows;
+    long time;
+    int fps;
+    int sleep = 5;
+    private boolean isRunningFromAnotherThread;
+    private boolean isAccelerationHint = true;
+    
+    /**
+     * Creates a new instance.
+     */
+    public GraphicsPerformancePanel() {
+        initComponents();
+    }
+    
+    public void paint(Graphics gr) {
+        Graphics2D g = getBufferedGraphics(gr, getWidth(), getHeight());
+        if (isRunning() && painter != null) {
+            g.setBackground(Color.white);
+            g.clearRect(0, 0, getWidth(), getHeight());
+            try {
+                painter.paint(g, getWidth(), getHeight());
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                stop();
+            }
+        }
+        Image img = getBufferedImage();
+        if (img != null) {
+            gr.drawImage(img, 0, 0, this);
+            shows++;
+            if (System.currentTimeMillis() - time >= 1000) {
+                setFPS(shows);
+            }
+        }
+    }
+    
+    public int getType() {
+        return getBufferedImage() != null ? getBufferedImage().getType() : 0;
+    }
+    
+    public int getFPS() {
+        return fps;
+    }
+    
+    
+    public void setFPS(int newValue) {
+        int oldValue = fps;
+        fps = newValue;
+        shows = 0;
+        time = System.currentTimeMillis();
+        firePropertyChange("fps", oldValue, newValue);
+    }
+    public int getRenderer() {
+        return renderer;
+    }
+    public void setRenderer(int newValue) {
+        int oldValue = renderer;
+        renderer = newValue;
+        firePropertyChange("renderer", oldValue, newValue);
+    }
+    public void setPainter(Painter newValue) {
+        Painter oldValue = painter;
+        painter = newValue;
+        firePropertyChange("painter", oldValue, newValue);
+    }
+    
+    private Graphics2D getBufferedGraphics(Graphics g, int w, int h) {
+        switch (renderer) {
+            case JAVA2D :
+                if (currentRenderer != renderer ||
+                image != null &&
+                (image.getWidth() != w ||
+                image.getHeight() != h
+                )) {
+                    if (image != null) {
+                        if (graphics != null) {
+                            graphics.dispose();
+                            graphics = null;
+                        }
+                        image.flush();
+                        image = null;
+                    }
+                }
+                if (image == null) {
+                    // Create a compatible image
+                    //image = getGraphicsConfiguration().createCompatibleImage(w, h, Transparency.OPAQUE);
+                    
+                    // Create the same type of BufferedImage as used by the
+                    // comparison code.
+                    image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+                    
+                    
+                    try {
+                        Method m = image.getClass().getMethod("setAccelerationPriority",new Class[] {Float.TYPE});
+                        m.invoke(image, new Object[] { (isAccelerationHint) ? new Float(1f) : new Float(0f)});
+                    } catch (NoSuchMethodException e) {
+                        // We are not running on Java 1.5. Thus, nothing we
+                        // can do about this.
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                    
+                    graphics = image.createGraphics();
+                    
+                    setRenderingHints(graphics);
+                    
+                    currentRenderer = renderer;
+                }
+                return graphics;
+                
+            case SINGLE_THREADED :
+                if (currentRenderer != renderer ||
+                image != null &&
+                (image.getWidth() != w ||
+                image.getHeight() != h
+                )) {
+                    if (image != null) {
+                        graphics.dispose();
+                        image.flush();
+                        image = null;
+                    }
+                }
+                if (image == null) {
+                    image = new PerfBufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+                    graphics = image.createGraphics();
+                    
+                    setRenderingHints(graphics);
+                    
+                    currentRenderer = renderer;
+                }
+                return graphics;
+                
+            case CONCURRENT :
+            default :
+                if (currentRenderer != renderer ||
+                image != null &&
+                (image.getWidth() != w ||
+                image.getHeight() != h
+                )) {
+                    if (image != null) {
+                        graphics.dispose();
+                        image.flush();
+                        image = null;
+                    }
+                }
+                if (image == null) {
+                    image = new PerfConcurrentBufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+                    graphics = image.createGraphics();
+                    
+                    setRenderingHints(graphics);
+                    
+                    currentRenderer = renderer;
+                }
+                return graphics;
+        }
+    }
+    private BufferedImage getBufferedImage() {
+        return image;
+    }
+    
+    protected void setRenderingHints(Graphics2D graphics) {
+        // Turn on all speed parameters
+        graphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+        RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_OFF);
+        graphics.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+        RenderingHints.VALUE_COLOR_RENDER_SPEED);
+        graphics.setRenderingHint(RenderingHints.KEY_DITHERING,
+        RenderingHints.VALUE_DITHER_DISABLE);
+        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+        RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
+        RenderingHints.VALUE_RENDER_SPEED);
+        graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+        RenderingHints.VALUE_STROKE_NORMALIZE);
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+        RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+    }
+    
+    public void setRunningFromAnotherThread(boolean b) {
+        isRunningFromAnotherThread = b;
+    }
+    
+    private boolean isRunning() {
+        return worker != null || isRunningFromAnotherThread;
+    }
+    
+    public void start() {
+        stop();
+        
+        worker = new Thread() {
+            public void run() {
+                //System.out.println("GraphicsPerformancePanel new worker="+this);
+                while (worker == this) {
+                    paint(getGraphics());
+                    /*
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                     
+                    }*/
+                }
+            }
+        };
+        shows = 0;
+        time = System.currentTimeMillis();
+        worker.start();
+    }
+    public void stop() {
+        Thread currentWorker = worker;
+        worker = null;
+        if (currentWorker != null) {
+            try {
+                currentWorker.join();
+            } catch (InterruptedException e) {
+                
+            }
+        }
+    }
+    public void setAccelerationHint(boolean newValue) {
+        boolean oldValue = isAccelerationHint;
+        isAccelerationHint = newValue;
+    }
+    
+    public boolean isAccelerated() {
+        if (image != null) {
+            try {
+                Method m = image.getClass().getMethod("getCapabilities", new Class[] {GraphicsConfiguration.class});
+                Object caps = m.invoke(image, new Object[] {null});
+                m = caps.getClass().getMethod("isAccelerated", null);
+                Boolean result = (Boolean) m.invoke(caps, null);
+                return result.booleanValue();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+        return false;
+    }
+    
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    private void initComponents() {//GEN-BEGIN:initComponents
+
+    }//GEN-END:initComponents
+    
+    
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+    
+}

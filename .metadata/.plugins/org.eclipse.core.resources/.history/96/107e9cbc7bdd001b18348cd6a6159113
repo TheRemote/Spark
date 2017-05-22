@@ -1,0 +1,205 @@
+package codemallet.spark.net;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+
+import javax.swing.JOptionPane;
+
+import codemallet.spark.Spark;
+
+public class NetCode
+{
+	private Socket sock;
+
+	BufferedReader in;
+
+	private PrintWriter out;
+
+	DatagramSocket udp;
+
+	InetAddress serveraddress;
+
+	private Spark game;
+
+	public static final int PORT = 5744;
+
+	public static final String HOST = "localhost";
+
+	// private static final String HOST = "208.109.234.125";
+
+	byte buffer[] = new byte[64];
+
+	DatagramPacket packet;
+
+	public NetProcessor netProcessor;
+
+	public long ReceiveCounter = -1;
+
+	public long GoodPackets;
+
+	long SendCounter;
+
+	public float PacketLoss = 0;
+
+	public int TCPPing = -1;
+
+	public int UDPPing = -1;
+
+	int UDPStrikes;
+
+	long TCPSent;
+
+	long UDPSent;
+
+	public NetCode(Spark game)
+	{
+		this.game = game;
+		game.gameNetCode = this;
+		netProcessor = new NetProcessor(game);
+
+		makeContact();
+	}
+
+	private void makeContact()
+	{
+		try
+		{
+			serveraddress = InetAddress.getByName(HOST);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			sock = new Socket(HOST, PORT);
+			in = new BufferedReader(
+					new InputStreamReader(sock.getInputStream()));
+			out = new PrintWriter(sock.getOutputStream(), true);
+
+			try
+			{
+				serveraddress = InetAddress.getByName(HOST);
+
+				udp = new DatagramSocket();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+
+			new NetTCP(game, in).start();
+			new NetUDP(game, udp).start();
+		}
+		catch (Exception e)
+		{
+			game.StartError = true;
+			game.Start = true;
+			e.printStackTrace();
+			System.out.println("Unable to connect to the server!");
+			JOptionPane.showMessageDialog(null,
+					"Unable to connect to the server!");
+		}
+	}
+
+	public void closeLink()
+	{
+		try
+		{
+			if (out != null)
+				out.println("bye");
+			if (in != null)
+				in.close();
+			if (out != null)
+				out.close();
+			if (sock != null)
+				sock.close();
+			if (udp != null)
+				udp.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.out.println("Disconnected from the server! " + e.toString());
+		}
+	}
+
+	public void SendTCP(String line)
+	{
+		out.println(line);
+	}
+
+	public void SendUDP(String line, boolean Critical)
+	{
+		if (Critical == true)
+		{
+			if (PacketLoss > 0.1f)
+			{
+				SendTCP(line);
+				return;
+			}
+		}
+		if (packet == null)
+			packet = new DatagramPacket(buffer, buffer.length,
+					game.gameNetCode.serveraddress, NetCode.PORT + 1);
+		String sendline = game.gamePlayer.Index + " " + SendCounter + " "
+				+ line;
+		SendCounter++;
+		packet.setData(sendline.getBytes());
+		packet.setLength(sendline.length());
+		try
+		{
+			udp.send(packet);
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error sending packet: " + e.toString());
+		}
+	}
+
+	public void SendTCPPing()
+	{
+		SendTCP("tcpping");
+		TCPSent = game.Tick;
+	}
+
+	public void SendUDPPing()
+	{
+		SendUDP("ping", false);
+		UDPSent = game.Tick;
+	}
+
+	public void ReceiveTCPPing()
+	{
+		TCPPing = (int) (game.Tick - TCPSent);
+	}
+
+	public void ReceiveUDPPing()
+	{
+		long Total = (game.Tick - UDPSent);
+		UDPPing = (int) Total;
+		if (UDPPing > TCPPing)
+		{
+			int Difference = UDPPing - TCPPing;
+
+			if (Difference > 50)
+			{
+				UDPStrikes++;
+				if (UDPStrikes > 20)
+				{
+					UDPPing = -1;
+					PacketLoss = 100;
+					GoodPackets = 0;
+					ReceiveCounter = 10000000;
+				}
+			}
+			else
+				UDPStrikes = 0;
+		}
+	}
+}

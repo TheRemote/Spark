@@ -1,0 +1,144 @@
+package codemallet.spark.weapon;
+
+
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+
+
+public class BounceList
+{
+	private LinkedList<Bounce> BounceList;
+
+	private LinkedList<Bounce> BounceListQueue;
+
+	private Spark game;
+
+	public BounceList(Spark game)
+	{
+		this.game = game;
+
+		BounceList = new LinkedList<Bounce>();
+		BounceListQueue = new LinkedList<Bounce>();
+	}
+
+	synchronized public void Cycle(int delta)
+	{
+		ListIterator iterator = BounceListQueue.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Bounce bounce = (Bounce) iterator.next();
+
+			BounceList.add(bounce);
+			iterator.remove();
+		}
+
+		iterator = BounceList.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Bounce bounce = (Bounce) iterator.next();
+			bounce.Cycle(delta);
+
+			if (bounce.TrailLength < 0)
+			{
+				iterator.remove();
+			}
+		}
+	}
+
+	synchronized public void addBounce(double X, double Y, double Angle,
+			byte Owner)
+	{
+		Bounce bounce = new Bounce(game);
+		bounce.X = X;
+		bounce.Y = Y;
+		bounce.StartX = X;
+		bounce.StartY = Y;
+		bounce.Angle = Angle;
+		bounce.Owner = Owner;
+		bounce.Team = game.gamePlayers.getTeam(Owner);
+
+		switch (bounce.Team)
+		{
+			case 0:
+				bounce.StartColor = Color.green;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+			case 1:
+				bounce.StartColor = Color.red;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+			case 2:
+				bounce.StartColor = Color.blue;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+			case 3:
+				bounce.StartColor = Color.yellow;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+
+		}
+
+		bounce.Life = 1000;
+		bounce.MaxLife = bounce.Life;
+		bounce.TrailLength = 95;
+
+		BounceList.add(bounce);
+	}
+
+	synchronized public void addBounce(double X, double Y, double Angle,
+			byte Owner, short BounceLife)
+	{
+		Bounce bounce = new Bounce(game);
+		bounce.X = X;
+		bounce.Y = Y;
+		bounce.StartX = X;
+		bounce.StartY = Y;
+		bounce.Angle = Angle;
+		bounce.Owner = Owner;
+		bounce.Team = game.gamePlayers.getTeam(Owner);
+
+		switch (bounce.Team)
+		{
+			case 0:
+				bounce.StartColor = Color.green;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+			case 1:
+				bounce.StartColor = Color.red;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+			case 2:
+				bounce.StartColor = Color.blue;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+			case 3:
+				bounce.StartColor = Color.yellow;
+				bounce.EndColor = new Color(70, 70, 70);
+				break;
+
+		}
+
+		bounce.Life = BounceLife;
+		bounce.MaxLife = bounce.Life;
+		bounce.TrailLength = 75;
+
+		BounceListQueue.add(bounce);
+	}
+
+	synchronized public void drawBouncies()
+	{
+		ListIterator iterator = BounceList.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Bounce bounce = (Bounce) iterator.next();
+			bounce.Render();
+		}
+	}
+}

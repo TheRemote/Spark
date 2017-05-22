@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;Spark/Spark.bat&apos;" deleteContents="false" description="Delete resource &apos;Spark/Spark.bat&apos;" element1="/Spark/Spark.bat" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1236975566859"/>
+</session>

@@ -1,0 +1,336 @@
+package codemallet.spark.server.net;
+
+import java.net.InetAddress;
+import java.nio.BufferUnderflowException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.xsocket.datagram.Endpoint;
+import org.xsocket.stream.IMultithreadedServer;
+import org.xsocket.stream.MultithreadedServer;
+import org.xsocket.stream.NonBlockingConnection;
+import org.xsocket.stream.StreamUtils;
+import org.xsocket.stream.IConnection.FlushMode;
+
+import codemallet.spark.server.Server;
+import codemallet.spark.server.player.Player;
+
+public final class NetCode
+{
+	Server server;
+
+	private IMultithreadedServer xSocketServer;
+
+	private ExecutorService xSocketExecutor;
+
+	public Endpoint connectionUDP;
+
+	private InetAddress address;
+	
+	//private final StringEncrypter serverEncryption = new StringEncrypter();
+
+	public static char Delim = 0;
+
+	public NetCode(Server server)
+	{
+		this.server = server;
+	}
+	
+	public final void Initialize()
+	{
+		try
+		{
+			xSocketExecutor = Executors.newCachedThreadPool();
+			if (server.IPAddress != null && server.IPAddress.length() > 0)
+			{
+				try
+				{
+					address = InetAddress.getByName(server.IPAddress);
+					xSocketServer = new MultithreadedServer(address,
+							server.Port, new NetHandler(server),
+							xSocketExecutor);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				xSocketServer = new MultithreadedServer(server.Port,
+						new NetHandler(server), xSocketExecutor);
+			}
+			xSocketServer.setIdleTimeoutSec(30);
+
+			connectionUDP = new Endpoint(128, server.netudp, address,
+					server.Port);
+			
+			server.netPingPort = new NetPingPort(address, server.Port);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		StreamUtils.start(xSocketServer);
+	}
+
+	public final void Close()
+	{
+		try
+		{
+			xSocketExecutor.shutdownNow();
+		}
+		catch (Exception e)
+		{
+
+		}
+		try
+		{
+			xSocketServer.close();
+		}
+		catch (Exception e)
+		{
+
+		}
+		try
+		{
+			connectionUDP.close();
+		}
+		catch (Exception e)
+		{
+
+		}
+	}
+	
+	public final void ProcessQueue()
+	{
+		while (true)
+		{
+			NetEvent event = server.serverPacketQueue.poll();
+			if (event != null)
+			{
+				switch (event.Type)
+				{
+					case 0:
+					{
+						try
+						{
+							Player player = (Player) event.con.getAttachment();
+							if (player != null)
+							{
+								String line = event.con
+										.readStringByDelimiter("\r\n"
+												+ NetCode.Delim);
+
+								if (line != null)
+								{
+									//line = serverEncryption.decrypt(line);
+									server.netProcessor.doRequest(line, player);
+								}
+							}
+							else
+							{
+								System.err
+										.println("Connection's player is null - closing connection");
+								try
+								{
+									event.con.close();
+								}
+								catch (Exception e)
+								{
+
+								}
+							}
+						}
+						catch (BufferUnderflowException e)
+						{
+
+						}
+						catch (Exception e)
+						{
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception ee)
+							{
+
+							}
+							e.printStackTrace();
+						}
+					}
+						break;
+					case 1:
+					{
+						Player player = (Player) event.con.getAttachment();
+
+						if (player != null)
+						{
+							if (player.Name != null)
+							{
+								System.err.println("ConnectionTimeout: "
+										+ player.Name + " - "
+										+ player.IPAddress);
+							}
+							else
+							{
+								System.err.println("ConnectionTimeout: "
+										+ player.IPAddress);
+							}
+							server.players.delPerson(player.Index);
+
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					}
+						break;
+					case 2:
+					{
+						Player player = (Player) event.con.getAttachment();
+
+						if (player != null)
+						{
+							if (player.Name != null)
+							{
+								System.err.println("IdleTimeout: "
+										+ player.Name + " - "
+										+ player.IPAddress);
+							}
+							else
+							{
+								System.err.println("IdleTimeout: "
+										+ player.IPAddress);
+							}
+							server.players.delPerson(player.Index);
+
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					}
+						break;
+					case 3:
+					{
+						Player player = (Player) event.con.getAttachment();
+
+						if (player != null)
+						{
+							if (player.Name != null)
+							{
+								System.err.println("Disconnected: "
+										+ player.Name + " - "
+										+ player.IPAddress);
+							}
+							else
+							{
+								System.err.println("Disconnected: "
+										+ player.IPAddress);
+							}
+							server.players.delPerson(player.Index);
+
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							try
+							{
+								event.con.close();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					}
+						break;
+					case 4:
+					{
+						try
+						{
+							event.con.setFlushmode(FlushMode.ASYNC);
+							event.con.setAutoflush(true);
+							event.con.setIdleTimeoutSec(20);
+							event.con.setOption(
+									NonBlockingConnection.TCP_NODELAY, true);
+							// con.setOption(NonBlockingConnection.SO_SNDBUF,
+							// 32728);
+							// con.setOption(NonBlockingConnection.SO_RCVBUF,
+							// 32728);
+							Player player = server.players.addPerson(event.con);
+							if (player != null)
+							{
+								InetAddress address = event.con
+										.getRemoteAddress();
+								player.IPAddress = address.getHostAddress();
+								event.con.setAttachment(player);
+								System.err.println("Connection from "
+										+ player.IPAddress);
+							}
+							else
+							{
+								System.err
+										.println("Could not accept new connection, server is full.");
+								event.con.close();
+							}
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
+						break;
+					case 5:
+					{
+						server.netProcessor.doRequest(event.line, event.localPlayer);
+					}
+						break;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}

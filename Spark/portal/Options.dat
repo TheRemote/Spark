@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="colorAdminText">-65536</entry>
+<entry key="sizeSparkLobbyGamePane">505</entry>
+<entry key="colorSelectionforeground">-1</entry>
+<entry key="colorPrivateMessageText">-26317</entry>
+<entry key="loginName">testing101</entry>
+<entry key="eventLeaveRoom">true</entry>
+<entry key="eventLeaveGame">true</entry>
+<entry key="sizeSparkLobbyChatPane">533</entry>
+<entry key="loginSavePassword">true</entry>
+<entry key="colorGuideText">-16711936</entry>
+<entry key="eventJoinRoom">true</entry>
+<entry key="sizeSparkLobbySizeY">550</entry>
+<entry key="eventJoinGame">true</entry>
+<entry key="sizeSparkLobbySizeX">750</entry>
+<entry key="sizeSparkLobbyMainPane">200</entry>
+<entry key="colorBackground">-16777216</entry>
+<entry key="chatRooms"/>
+<entry key="colorEventText">-4144960</entry>
+<entry key="colorSelectionbackground">-12566464</entry>
+<entry key="eventQuitGame">true</entry>
+<entry key="loginPassword">4pQPCkE38AAaZs/n4coLNw==</entry>
+<entry key="chatTimestamps">false</entry>
+<entry key="colorForeground">-1</entry>
+</properties>

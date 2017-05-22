@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: codemallet.spark.Spark
+Class-Path: shared/slick.jar shared/lwjgl.jar shared/jinput.jar shared/xSocket.jar shared/jorbis.jar shared/jogg.jar

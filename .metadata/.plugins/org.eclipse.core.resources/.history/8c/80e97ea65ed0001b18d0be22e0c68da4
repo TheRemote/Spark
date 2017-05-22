@@ -1,0 +1,85 @@
+package codemallet.spark.weapon;
+
+
+import java.awt.Rectangle;
+
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+import codemallet.spark.collision.Collision;
+import codemallet.spark.collision.GameCollision;
+
+
+public class Sparks
+{
+	Spark game;
+
+	double X;
+
+	double Y;
+
+	double Angle;
+
+	double Magnitude;
+
+	long Time;
+
+	Color Color;
+
+	Sparks(Spark game)
+	{
+		this.game = game;
+
+	}
+
+	void Cycle(int delta)
+	{
+		X += (double) (Math.sin(Angle) * Magnitude);
+		Y += (double) (Math.cos(Angle) * Magnitude);
+
+		checkCollision();
+	}
+
+	void Render()
+	{
+		int DrawX = (int) X
+				- (int) (game.gamePlayer.X - game.gamePlayer.OffsetX);
+		int DrawY = (int) Y
+				- (int) (game.gamePlayer.Y - game.gamePlayer.OffsetY);
+		game.g.setColor(Color);
+		game.g.fillRect(DrawX, DrawY, 1, 1);
+	}
+
+	synchronized public boolean checkCollision()
+	{
+		int TX = (int) (X / 16);
+		int TY = (int) (Y / 16);
+
+		if ((TX > 0) & (TY > 0) & (TX < 256) & (TY < 256))
+		{
+			int tile = game.gameMap.GameMap.MapData[(TY * game.gameMap.GameMap.width)
+					+ TX];
+
+			if ((tile & 0x8000) != 0) // Is it an animation?
+			{
+				char idx = (char) ((tile & 0x00FF));
+				tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+			}
+			if (GameCollision.checkWeaponCollision(tile, Angle) == true)
+			{
+				TX *= 16;
+				TY *= 16;
+				int cy = tile / 40 * 16;
+				int cx = tile % 40 * 16;
+				Rectangle intersect = Collision.PixelPointCollision((int) X,
+						(int) Y, game.imgTileWeapons, TX, TY, 16, 16, cx, cy);
+				if (intersect != null)
+				{
+					Time = 0;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+}

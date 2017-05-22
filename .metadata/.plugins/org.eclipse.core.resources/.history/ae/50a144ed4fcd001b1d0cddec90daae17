@@ -1,0 +1,233 @@
+package codemallet.spark.weapon;
+
+
+import java.awt.Rectangle;
+
+import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+import codemallet.spark.collision.Collision;
+import codemallet.spark.collision.GameCollision;
+
+
+public class Bounce
+{
+	Spark game;
+
+	char Type;
+
+	double X;
+
+	double Y;
+
+	double StartX;
+
+	double StartY;
+
+	double EndX;
+
+	double EndY;
+
+	double Angle;
+
+	byte Owner;
+
+	byte Team;
+
+	short MaxLife;
+
+	short Life;
+
+	float TrailLength;
+
+	float Magnitude = 0.7f;
+
+	float ReverseMagnitude = 0.1f;
+
+	short SlowMove = 8;
+
+	Color StartColor;
+
+	Color EndColor;
+
+	short HitType;
+
+	short HitIndex;
+
+	Bounce(Spark game)
+	{
+		this.game = game;
+
+	}
+
+	void Cycle(int delta)
+	{
+		if (EndX > 0 || EndY > 0)
+		{
+			X = EndX;
+			Y = EndY;
+			TrailLength -= (Magnitude * delta);
+		}
+		else
+		{
+			Life -= (short) (Magnitude * delta);
+			if (Life < 0)
+			{
+				EndX = X;
+				EndY = Y;
+				return;
+			}
+
+			for (int a = 1; a <= SlowMove; a++)
+			{
+				X += ((double) (Math.cos(Angle) * Magnitude) / SlowMove) * delta;
+				Y += ((double) (Math.sin(Angle) * Magnitude) / SlowMove) * delta;
+
+				if (checkCollision() == true)
+				{
+					while (true)
+					{
+						X -= (double) (Math.cos(Angle) * ReverseMagnitude) * delta;
+						Y -= (double) (Math.sin(Angle) * ReverseMagnitude) * delta;
+
+						if (checkCollision() == false)
+						{
+							break;
+						}
+					}
+
+					EndX = X;
+					EndY = Y;
+
+					double NewAngle = 0;
+					NewAngle = (Math.PI) - Angle;
+
+					X += ((double) (Math.cos(NewAngle) * Magnitude) / SlowMove) * delta;
+					Y += ((double) (Math.sin(NewAngle) * Magnitude) / SlowMove) * delta;
+
+					if (checkCollision() == true)
+					{
+						NewAngle = (2 * Math.PI) - Angle;
+					}
+
+					X = EndX;
+					Y = EndY;
+
+					if (NewAngle > (Math.PI))
+						NewAngle -= (2 * Math.PI);
+
+					game.gameBouncies.addBounce(X, Y, NewAngle, Owner, Life);
+					game.gameSound.playBounce((short) X, (short) Y);
+					break;
+				}
+
+				if (HitType == 1)
+				{
+					game.gameSound.playHitBouncy((short) X, (short) Y);
+					for (int z = 0; z < 30; z++)
+					{
+						game.gameSparks.addSpark(X, Y, Angle);
+					}
+
+					if (game.gamePlayer.Index == HitIndex)
+					{
+						game.gameWeapons.bounceHit(Owner, Team);
+					}
+					break;
+				}
+
+			}
+		}
+	}
+
+	void Render()
+	{
+		int DrawX = (int) X
+				- (int) (game.gamePlayer.X - game.gamePlayer.OffsetX);
+		int DrawY = (int) Y
+				- (int) (game.gamePlayer.Y - game.gamePlayer.OffsetY);
+
+		int DrawX2 = 0;
+		int DrawY2 = 0;
+
+		if (Life >= (MaxLife - TrailLength))
+		{
+			DrawX2 = (int) StartX
+					- (int) (game.gamePlayer.X - game.gamePlayer.OffsetX);
+			DrawY2 = (int) StartY
+					- (int) (int) (game.gamePlayer.Y - game.gamePlayer.OffsetY);
+		}
+		else
+		{
+			DrawX2 = (int) X
+					- (int) (game.gamePlayer.X - game.gamePlayer.OffsetX)
+					- (int) (Math.cos(Angle) * TrailLength);
+			DrawY2 = (int) Y
+					- (int) (game.gamePlayer.Y - game.gamePlayer.OffsetY)
+					- (int) (Math.sin(Angle) * TrailLength);
+		}
+
+		GL11.glColor3f(StartColor.r,
+				StartColor.g, StartColor.b);
+		GL11.glVertex2f(DrawX, DrawY);
+
+		GL11.glColor3f(EndColor.r,
+				EndColor.g, EndColor.b);
+		GL11.glVertex2f(DrawX2, DrawY2);
+	}
+
+	boolean checkCollision()
+	{
+		int TX = (int) (X / 16);
+		int TY = (int) (Y / 16);
+
+		if ((TX > 0) & (TY > 0) & (TX < 256) & (TY < 256))
+		{
+			int tile = game.gameMap.GameMap.MapData[(TY * game.gameMap.GameMap.width)
+					+ TX];
+
+			if ((tile & 0x8000) != 0) // Is it an animation?
+			{
+				char idx = (char) ((tile & 0x00FF));
+				tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+			}
+			if (GameCollision.checkWeaponCollision(tile, Angle) == true)
+			{
+				TX *= 16;
+				TY *= 16;
+				int cy = tile / 40 * 16;
+				int cx = tile % 40 * 16;
+				Rectangle intersect = Collision.PixelPointCollision((int) X,
+						(int) Y, game.imgTileWeapons, TX, TY, 16, 16, cx, cy);
+				if (intersect != null)
+				{
+					return true;
+				}
+			}
+		}
+
+		for (byte i = 0; i < game.gamePlayers.getMaxPlayers(); i++)
+		{
+			if (game.gamePlayers.inUse(i) == true && i != Owner
+					&& game.gamePlayers.getDead(i) == false)
+			{
+				Rectangle intersect = Collision.PixelPointCollision((int) X,
+						(int) Y, game.imgTunaCollision, (int) game.gamePlayers.getX(i),
+						(int) game.gamePlayers.getY(i), 31, 31,
+						game.gamePlayers.getDirection(i) * 32,
+						292 + game.gamePlayers.getTeam(i) * 32);
+				if (intersect != null)
+				{
+					HitType = 1;
+					HitIndex = i;
+					EndX = X;
+					EndY = Y;
+					return false;
+				}
+			}
+		}
+
+		return false;
+	}
+}

@@ -1,0 +1,22 @@
+#Tue Jan 02 17:12:31 MST 2007
+CLASSPATH_ORG_ECLIPSE_EQUINOX_COMMON=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.equinox.common_3.2.0.v20060603.jar;
+CLASSPATH_ORG_ECLIPSE_EMF_ECORE=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.emf.ecore_2.2.1.v200609210005.jar;
+CLASSPATH_ORG_APACHE_COMMONS_LOGGING=C\:\\Program Files\\eclipse\\plugins\\org.apache.commons_logging_1.0.4.v200606131651\\lib\\commons-logging-1.0.4.jar;
+CLASSPATH_ORG_ECLIPSE_EMF_COMMON=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.emf.common_2.2.1.v200609210005.jar;
+LIB_EXTENSION=.dll
+CLASSPATH_ORG_APACHE_JAKARTA_COMMONS_LOGGING=C\:\\Program Files\\eclipse\\plugins\\org.apache.commons_logging_1.0.4.v200606131651\\lib\\commons-logging-1.0.4.jar;
+PROBEKIT_PLUGIN=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.hyades.probekit_4.2.100.v200609190100
+eclipse.preferences.version=1
+CLASSPATH_ORG_ECLIPSE_CORE_COMMANDS=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.core.commands_3.2.0.I20060605-1400.jar;
+CLASSPATH_ORG_ECLIPSE_CORE_RUNTIME=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.core.runtime_3.2.0.v20060603.jar;
+ECLIPSE_OS=win32
+ECLIPSEROOT=C\:\\Program Files\\eclipse
+CLASSPATH_ORG_JUNIT=C\:\\Program Files\\eclipse\\plugins\\org.junit_3.8.1\\junit.jar;
+CLASSPATH_ORG_ECLIPSE_JFACE=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.jface_3.2.1.M20060908-1000.jar;
+ECLIPSE_ARCH=x86
+CLASSPATH_ORG_ECLIPSE_EMF_ECORE_XMI=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.emf.ecore.xmi_2.2.1.v200609210005.jar;
+CLASSPATH_COM_IBM_ICU=C\:\\Program Files\\eclipse\\plugins\\com.ibm.icu_3.4.5.jar;
+PLUGINS_HOME=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.hyades.execution_4.3.0.v200611150100\\iac-runtime\\extensions
+Enable=false
+RASERVER_HOME=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.hyades.execution_4.3.0.v200611150100\\iac-runtime
+CLASSPATH_ORG_ECLIPSE_SWT=C\:\\Program Files\\eclipse\\plugins\\org.eclipse.swt_3.2.1.v3235e.jar;C\:\\Program Files\\eclipse\\plugins\\org.eclipse.swt.win32.win32.x86_3.2.1.v3235.jar;

@@ -1,0 +1,57 @@
+package codemallet.spark.server.net;
+
+import java.net.InetAddress;
+
+import org.xsocket.datagram.Endpoint;
+import org.xsocket.datagram.IDatagramHandler;
+import org.xsocket.datagram.IEndpoint;
+import org.xsocket.datagram.UserDatagram;
+
+public class NetPingPort implements IDatagramHandler
+{
+	private Endpoint connectionUDP;
+
+	public NetPingPort(InetAddress Address, int Port)
+	{
+		try
+		{
+			connectionUDP = new Endpoint(256, this, Address, Port);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public boolean onDatagram(IEndpoint endpoint)
+	{
+		try
+		{
+			UserDatagram packet = endpoint.receive();
+			if (packet != null)
+			{
+				UserDatagram newPacket = new UserDatagram(packet
+						.getRemoteAddress(), packet.getRemotePort(), 1);
+				endpoint.send(newPacket);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return true;
+	}
+	
+	public void Close()
+	{
+		try
+		{
+			connectionUDP.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

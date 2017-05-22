@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="Z:/Code/Portal/ReleaseFiles/sparknodist.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/Spark/SparkNoDist.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/Spark/MANIFEST.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.chat"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.clan"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.options"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.sound"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.util"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.engines.java2d"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.engines"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.engines.slick"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.dialog"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.weapon"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.collision"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.gameinterface"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.input"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.security"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.map"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.net"/>
+        <javaElement handleIdentifier="=Spark/&lt;codemallet.spark.player"/>
+    </selectedElements>
+</jardesc>

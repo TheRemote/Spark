@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<session version="1.0">
+<refactoring comment="Rename package 'resource' to 'codemallet.spark.resource'&#13;&#10;- Original element: 'Spark/resource'&#13;&#10;- Renamed element: 'Spark/codemallet.spark.resource'&#13;&#10;- Update references to refactored element&#13;&#10;- Update textual occurrences in comments and strings" description="Rename package 'resource'" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/&lt;resource" name="codemallet.spark.resource" qualified="false" references="true" stamp="1166851507531" textual="false" version="1.0"/>
+</session>

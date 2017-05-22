@@ -1,0 +1,408 @@
+package codemallet.spark.weapon;
+
+
+import java.util.Random;
+
+import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+
+
+public class Weapons
+{
+	Spark game;
+
+	// Stats
+	long timeEnergy;
+
+	long timeSmoke;
+
+	int SmokeAnimation;
+
+	Random rand = new Random();
+
+	public int Energy;
+
+	public int MaxEnergy = 56;
+
+	public int Health = 112;
+
+	public int MaxHealth = 112;
+
+	public int MissileRecharge;
+
+	public int MissileCharges;
+
+	public int GrenadeRecharge;
+
+	public int GrenadeCharges;
+
+	public int BouncyRecharge;
+
+	public int BouncyCharges;
+
+	public int MaxMissileRecharge = 21;
+
+	public int MaxGrenadeRecharge = 21;
+
+	public int MaxBouncyRecharge = 21;
+
+	// Weapon costs
+	public int HealthBonus = 30;
+
+	public int HealthSmoke = 40;
+
+	public int EnergyLaser = 12;
+
+	public int EnergyMissile = 43;
+
+	public int EnergyGrenade = 10;
+
+	public int EnergyBouncy = 12;
+
+	public int HealthLaser = 7;
+
+	public int HealthMissile = 17;
+
+	public int HealthGrenade = 5;
+
+	public int HealthBouncy = 8;
+
+	public int HealthMissileShrapnel = 5;
+
+	public int TotalHealthLaser;
+
+	public int TotalHealthMissile;
+
+	public int TotalHealthGrenade;
+
+	public int TotalHealthBouncy;
+
+	public int TotalHealthMissileShrapnel;
+
+	public Weapons(Spark game)
+	{
+		this.game = game;
+	}
+	
+	public void CalculateDamage()
+	{
+		TotalHealthLaser = HealthLaser * (game.gameMap.GameMap.laserDamage + 1);
+		TotalHealthMissile = HealthMissile
+				* (game.gameMap.GameMap.specialDamage + 1);
+		TotalHealthGrenade = HealthGrenade
+				* (game.gameMap.GameMap.specialDamage + 1);
+		TotalHealthBouncy = HealthBouncy
+				* (game.gameMap.GameMap.specialDamage + 1);
+		TotalHealthMissileShrapnel = HealthMissileShrapnel
+				* game.gameMap.GameMap.specialDamage;
+	}
+
+	public void Cycle(int delta)
+	{
+		game.gameLasers.Cycle(delta);
+		game.gameMissiles.Cycle(delta);
+		game.gameGrenades.Cycle(delta);
+		game.gameBouncies.Cycle(delta);
+		game.gameSparks.Cycle(delta);
+		game.gameShrapnel.Cycle(delta);
+		game.gameTrails.Cycle(delta);
+		game.gameExplosions.Cycle(delta);
+		game.gameSmoke.Cycle(delta);
+
+		if (game.gamePlayer.Dead == false)
+		{
+			if (game.Tick > timeEnergy)
+			{
+				if (Energy < MaxEnergy)
+					Energy++;
+				timeEnergy = game.Tick + 60;
+			}
+
+			if (game.gamePlayer.Smoking == true && game.Tick > timeSmoke)
+			{
+				timeSmoke = game.Tick + 400;
+				game.gameSmoke.addSmoke((short) (game.gamePlayer.X + rand
+						.nextInt(25)), (short) (game.gamePlayer.Y + rand
+						.nextInt(25)), (byte) 0, (short) 0);
+
+				SmokeAnimation = 1 - SmokeAnimation;
+				if (SmokeAnimation == 1)
+				{
+					int SparkX = rand.nextInt(25);
+					int SparkY = rand.nextInt(25);
+					for (int i = 0; i < 20; i++)
+					{
+						game.gameSparks.addSpark(game.gamePlayer.X + SparkX,
+								game.gamePlayer.Y + SparkY, 0.0f);
+					}
+				}
+			}
+		}
+	}
+
+	public void drawWeapons()
+	{
+		game.g.setAntiAlias(true);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glBegin(GL11.GL_LINES);
+		game.gameLasers.drawLasers();
+		game.gameBouncies.drawBouncies();
+		GL11.glEnd();
+		game.g.setAntiAlias(false);
+		game.gameMissiles.drawMissiles();
+		game.gamePlayers.drawPlayers();
+		game.gamePlayer.Render();
+		game.gameExplosions.drawExplosions();
+		game.gameSmoke.drawSmoke();
+		game.gameSparks.drawSparks();
+		game.gameShrapnel.drawShrapnel();
+		game.gameTrails.drawTrails();
+		game.gameGrenades.drawGrenades();
+	}
+
+	public void takeEnergy(int Energy)
+	{
+		this.Energy -= Energy;
+		if (this.Energy < 0)
+			this.Energy = 0;
+	}
+
+	public boolean hasEnergy(int Energy)
+	{
+		if (Energy > this.Energy)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public void takeHealth(int Health)
+	{
+		this.Health -= Health;
+		if (this.Health < HealthSmoke && game.gamePlayer.Smoking == false)
+		{
+			game.gamePlayer.Smoking = true;
+			game.gameNetCode.SendUDP("smoking 1", true);
+			game.gameSound.playSound("sndArmorCritical");
+		}
+		if (this.Health < 0)
+			this.Health = 0;
+	}
+
+	public boolean hasHealth(int Health)
+	{
+		if (Health > this.Health)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public void laserHit(byte Owner, short Team)
+	{
+		if (game.gamePlayer.Team != Team)
+		{
+			if (hasHealth(TotalHealthLaser) == false)
+			{
+				game.gameNetCode.SendUDP("death " + Owner, true);
+				game.gamePlayer.Dead = true;
+				game.gameExplosions.addExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16), (short) (2));
+				game.gameSound.playExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16));
+				Health = 0;
+				Energy = 0;
+				game.gamePlayers.setDead(game.gamePlayer.Index, true);
+				game.gameChat.Add3PartMessage(game.gamePlayers.getName(Owner),
+						" destroyed ", game.gamePlayer.Name, game.gameChat
+								.getColor(game.gamePlayers.getTeam(Owner)), Color.white, game.gameChat
+								.getColor(game.gamePlayer.Team));
+			}
+			else
+				takeHealth(TotalHealthLaser);
+		}
+	}
+
+	public void missileHit(byte Owner, short Team)
+	{
+		if (game.gamePlayer.Team != Team)
+		{
+			if (hasHealth(TotalHealthMissile) == false)
+			{
+				game.gameNetCode.SendUDP("death " + Owner, true);
+				game.gamePlayer.Dead = true;
+				game.gameExplosions.addExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16), (short) (2));
+				game.gameSound.playExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16));
+				Health = 0;
+				Energy = 0;
+				game.gamePlayers.setDead(game.gamePlayer.Index, true);
+				game.gameChat.Add3PartMessage(game.gamePlayers.getName(Owner),
+						" destroyed ", game.gamePlayer.Name, game.gameChat
+								.getColor(game.gamePlayers.getTeam(Owner)), Color.white, game.gameChat
+								.getColor(game.gamePlayer.Team));
+			}
+			else
+				takeHealth(TotalHealthMissile);
+		}
+	}
+
+	public void grenadeHit(byte Owner, short Team)
+	{
+		if (game.gamePlayer.Team != Team && game.gamePlayer.HoldingPen == false)
+		{
+			if (hasHealth(TotalHealthGrenade) == false)
+			{
+				game.gameNetCode.SendUDP("death " + Owner, true);
+				game.gamePlayer.Dead = true;
+				game.gameExplosions.addExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16), (short) (2));
+				game.gameSound.playExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16));
+				Health = 0;
+				Energy = 0;
+				game.gamePlayers.setDead(game.gamePlayer.Index, true);
+				game.gameChat.Add3PartMessage(game.gamePlayers.getName(Owner),
+						" destroyed ", game.gamePlayer.Name, game.gameChat
+								.getColor(game.gamePlayers.getTeam(Owner)), Color.white, game.gameChat
+								.getColor(game.gamePlayer.Team));
+			}
+			else
+				takeHealth(TotalHealthGrenade);
+		}
+	}
+
+	public void bounceHit(byte Owner, short Team)
+	{
+		if (game.gamePlayer.Team != Team)
+		{
+			if (hasHealth(TotalHealthBouncy) == false)
+			{
+				game.gameNetCode.SendUDP("death " + Owner, true);
+				game.gamePlayer.Dead = true;
+				game.gameExplosions.addExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16), (short) (2));
+				game.gameSound.playExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16));
+				Health = 0;
+				Energy = 0;
+				game.gamePlayers.setDead(game.gamePlayer.Index, true);
+				game.gameChat.Add3PartMessage(game.gamePlayers.getName(Owner),
+						" destroyed ", game.gamePlayer.Name, game.gameChat
+								.getColor(game.gamePlayers.getTeam(Owner)), Color.white, game.gameChat
+								.getColor(game.gamePlayer.Team));
+			}
+			else
+				takeHealth(TotalHealthBouncy);
+		}
+	}
+
+	public void missileShrapnelHit(byte Owner, short Team)
+	{
+		if (game.gamePlayer.Team != Team)
+		{
+			if (hasHealth(TotalHealthMissileShrapnel) == false)
+			{
+				game.gameNetCode.SendUDP("death " + Owner, true);
+				game.gamePlayer.Dead = true;
+				game.gameExplosions.addExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16), (short) (2));
+				game.gameSound.playExplosion(
+						(short) (game.gamePlayer.X - 16),
+						(short) (game.gamePlayer.Y - 16));
+				Health = 0;
+				Energy = 0;
+				game.gamePlayers.setDead(game.gamePlayer.Index, true);
+				game.gameChat.Add3PartMessage(game.gamePlayers.getName(Owner),
+						" destroyed ", game.gamePlayer.Name, game.gameChat
+								.getColor(game.gamePlayers.getTeam(Owner)), Color.white, game.gameChat
+								.getColor(game.gamePlayer.Team));
+			}
+			else
+				takeHealth(TotalHealthMissileShrapnel);
+		}
+	}
+
+	public void shootLaser(double shootX, double shootY, double Angle)
+	{
+		if (hasEnergy(EnergyLaser) == true)
+		{
+			game.gameLasers
+					.addLaser(shootX, shootY, Angle, game.gamePlayer.Index);
+			game.gameNetCode.SendUDP("laser " + (short) shootX + " "
+					+ (short) shootY + " " + Angle, true);
+			game.gameSound.playLaser((short) shootX, (short) shootY);
+			takeEnergy(EnergyLaser);
+		}
+	}
+
+	public void shootMissile(double shootX, double shootY, double Angle)
+	{
+		if (MissileCharges > 0 && hasEnergy(EnergyMissile) == true)
+		{
+			MissileCharges--;
+			game.gameMissiles.addMissile(shootX, shootY, Angle,
+					game.gamePlayer.Index);
+			game.gameNetCode.SendUDP("missile " + (short) shootX + " "
+					+ (short) shootY + " " + Angle, true);
+			game.gameSound.playMissile((short) shootX, (short) shootY);
+			takeEnergy(EnergyMissile);
+		}
+	}
+
+	public void shootGrenade(double shootX, double shootY, int x, int y,
+			double Angle)
+	{
+		if (GrenadeCharges > 0 && hasEnergy(EnergyGrenade) == true)
+		{
+			double DestX = shootX + x - game.gamePlayer.OffsetX - 16;
+			double DestY = shootY + y - game.gamePlayer.OffsetY - 16;
+			GrenadeCharges--;
+			game.gameGrenades.addGrenade(shootX, shootY, DestX, DestY, Angle,
+					game.gamePlayer.Index);
+			game.gameNetCode.SendUDP("grenade " + (short) shootX + " "
+					+ (short) shootY + " " + Angle + " " + (short) DestX + " "
+					+ (short) DestY, true);
+			game.gameSound.playGrenade((short) shootX, (short) shootY);
+			takeEnergy(EnergyGrenade);
+		}
+	}
+
+	public void shootBouncy(double shootX, double shootY, double Angle)
+	{
+		if (BouncyCharges > 0 && hasEnergy(EnergyBouncy) == true)
+		{
+			BouncyCharges--;
+			game.gameBouncies.addBounce(shootX, shootY, Angle,
+					game.gamePlayer.Index);
+			game.gameNetCode.SendUDP("bouncy " + (short) shootX + " "
+					+ (short) shootY + " " + Angle, true);
+			game.gameSound.playBouncy((short) shootX, (short) shootY);
+			takeEnergy(EnergyBouncy);
+		}
+	}
+
+	public void addHealthBonus()
+	{
+		Health += HealthBonus;
+		if (Health > HealthSmoke && game.gamePlayer.Smoking == true)
+		{
+			game.gamePlayer.Smoking = false;
+			game.gameNetCode.SendUDP("smoking 0", true);
+		}
+		if (Health > MaxHealth)
+			Health = MaxHealth;
+	}
+}

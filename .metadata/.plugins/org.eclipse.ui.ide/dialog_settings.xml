@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog">
+		<item value="false" key="ShowDerived"/>
+		<item value="true" key="ShowStatusLine"/>
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;workingSet isWindowWorkingSet=&quot;false&quot; workingSetName=&quot;&quot;/&gt;" key="WorkingSet"/>
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;History&gt;&#x0D;&#x0A;&lt;historyRootNode/&gt;&#x0D;&#x0A;&lt;/History&gt;" key="History"/>
+		<section name="DialogBoundsSettings">
+			<item value="600" key="DIALOG_WIDTH"/>
+			<item value="56" key="DIALOG_Y_ORIGIN"/>
+			<item value="344" key="DIALOG_X_ORIGIN"/>
+			<item value="500" key="DIALOG_HEIGHT"/>
+			<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
+		</section>
+	</section>
+	<section name="DialogMarkerPropertiesDialogSettings">
+		<item value="616" key="DIALOG_WIDTH"/>
+		<item value="311" key="DIALOG_Y_ORIGIN"/>
+		<item value="336" key="DIALOG_X_ORIGIN"/>
+		<item value="285" key="DIALOG_HEIGHT"/>
+		<item value="1|Tahoma|8|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.views.problem">
+	</section>
+	<section name="SaveAsDialogSettings">
+		<item value="438" key="DIALOG_WIDTH"/>
+		<item value="89" key="DIALOG_Y_ORIGIN"/>
+		<item value="107" key="DIALOG_X_ORIGIN"/>
+		<item value="559" key="DIALOG_HEIGHT"/>
+		<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="CleanDialogSettings">
+		<item value="443" key="DIALOG_WIDTH"/>
+		<item value="367" key="DIALOG_Y_ORIGIN"/>
+		<item value="461" key="DIALOG_X_ORIGIN"/>
+		<item value="377" key="DIALOG_HEIGHT"/>
+		<item value="false" key="TOGGLE_SELECTED"/>
+	</section>
+	<section name="NewWizardAction">
+		<item value="org.eclipse.jdt.ui.wizards.JavaProjectWizard" key="NewWizardSelectionPage.STORE_SELECTED_ID"/>
+		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.jdt.ui.java"/>
+		</list>
+	</section>
+</section>

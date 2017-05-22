@@ -1,0 +1,172 @@
+package codemallet.spark.weapon;
+
+import java.awt.Rectangle;
+
+import codemallet.spark.Spark;
+import codemallet.spark.collision.Collision;
+import codemallet.spark.collision.GameCollision;
+
+public class Missile
+{
+	Spark game;
+
+	char Type;
+
+	double X;
+
+	double Y;
+
+	double StartX;
+
+	double StartY;
+
+	double Angle;
+
+	byte Owner;
+
+	short Team;
+
+	short MaxLife;
+
+	short Life;
+
+	float Magnitude = 5.5f;
+
+	short ReverseMagnitude = 1;
+
+	short SlowMove = 8;
+
+	short HitType;
+
+	short HitIndex;
+
+	long TrailTimer;
+
+	Missile(Spark game)
+	{
+		this.game = game;
+	}
+
+	void Cycle(int delta)
+	{
+		Life -= (short) (Magnitude);
+		if (Life < 0)
+		{
+			return;
+		}
+
+		for (int a = 1; a <= SlowMove; a++)
+		{
+			X += (double) (Math.cos(Angle) * Magnitude) / SlowMove;
+			Y += (double) (Math.sin(Angle) * Magnitude) / SlowMove;
+
+			if (checkCollision() == true)
+			{
+				while (true)
+				{
+					X -= (double) (Math.cos(Angle) * ReverseMagnitude);
+					Y -= (double) (Math.sin(Angle) * ReverseMagnitude);
+
+					if (checkCollision() == false)
+					{
+						break;
+					}
+				}
+
+				game.gameExplosions.addExplosion((short) (X - 10),
+						(short) (Y - 10), (short) 0);
+
+				if (HitType == 1)
+				{
+					game.gameSound.playExplosion((short) X, (short) Y);
+					if (game.gamePlayer.Index == HitIndex)
+					{
+						game.gameWeapons.missileHit(Owner, Team);
+					}
+				}
+				else
+				{
+					game.gameSound.playHitMissile((short) X, (short) Y);
+					for (double i = -Math.PI; i < Math.PI; i += (Math.PI / 8))
+					{
+						game.gameShrapnel.addShrapnel((short) X, (short) Y,
+								Owner, 2 * Math.PI - i, (short) 0);
+					}
+				}
+
+				Life = -1;
+
+				break;
+			}
+		}
+		if (game.Tick > TrailTimer)
+		{
+			TrailTimer = 12;
+			game.gameTrails.addTrail((short) X, (short) Y, Owner, (short) 0);
+		}
+	}
+
+	void Render()
+	{
+		int DrawX = (int) X
+				- (int) (game.gamePlayer.X - game.gamePlayer.OffsetX) - 2;
+		int DrawY = (int) Y
+				- (int) (game.gamePlayer.Y - game.gamePlayer.OffsetY) - 2;
+
+		game.g.drawImage(game.imgTuna, DrawX, DrawY, DrawX + 4, DrawY + 4, 6,
+				586, 6 + 5, 586 + 5);
+	}
+
+	boolean checkCollision()
+	{
+		int TX = (int) (X / 16);
+		int TY = (int) (Y / 16);
+
+		if ((TX > 0) & (TY > 0) & (TX < 256) & (TY < 256))
+		{
+			int tile = game.gameMap.GameMap.MapData[(TY * game.gameMap.GameMap.width)
+					+ TX];
+
+			if ((tile & 0x8000) != 0) // Is it an animation?
+			{
+				char idx = (char) ((tile & 0x00FF));
+				tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+			}
+
+			if (GameCollision.checkWeaponCollision(tile, Angle) == true)
+			{
+				TX *= 16;
+				TY *= 16;
+				int cy = tile / 40 * 16;
+				int cx = tile % 40 * 16;
+				Rectangle intersect = Collision.PixelPointCollision((int) X,
+						(int) Y, game.imgTileWeapons, TX, TY, 16, 16, cx, cy);
+				if (intersect != null)
+				{
+					return true;
+				}
+			}
+		}
+
+		for (byte i = 0; i < game.gamePlayers.getMaxPlayers(); i++)
+		{
+			if (game.gamePlayers.inUse(i) == true && i != Owner
+					&& game.gamePlayers.getDead(i) == false)
+			{
+				Rectangle intersect = Collision.PixelPointCollision((int) X,
+						(int) Y, game.imgTunaCollision, (int) game.gamePlayers
+								.getX(i), (int) game.gamePlayers.getY(i), 31,
+						31, game.gamePlayers.getDirection(i) * 32,
+						292 + game.gamePlayers.getTeam(i) * 32);
+				if (intersect != null)
+				{
+					HitType = 1;
+					HitIndex = i;
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+}

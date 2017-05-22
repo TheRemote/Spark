@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/Server/codemallet/spark/server/SparkServer.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<booleanAttribute key="org.eclipse.hyades.trace.ui.ATTR_AUTO_FILTER_CRITERIA" value="true"/>
+<stringAttribute key="org.eclipse.hyades.trace.ui.ATTR_DATA_COLLECTOR" value="org.eclipse.tptp.trace.jvmti.jvmtiMechanism:org.eclipse.tptp.analysisType.jvmti.execution"/>
+<stringAttribute key="org.eclipse.hyades.trace.ui.ATTR_DESTINATION_FILE" value=""/>
+<stringAttribute key="org.eclipse.hyades.trace.ui.ATTR_DESTINATION_MONITOR" value="DefaultMonitor"/>
+<stringAttribute key="org.eclipse.hyades.trace.ui.ATTR_DESTINATION_PROJECT" value="ProfileProject"/>
+<booleanAttribute key="org.eclipse.hyades.trace.ui.ATTR_PROFILE_TO_FILE" value="false"/>
+<stringAttribute key="org.eclipse.hyades.trace.ui.ATTR_PROFILING_SET" value="tptp-dummy-profiling-set-Server"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="codemallet.spark.server.SparkServer"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="5760 5860 640 APL07Pub.map 2 2 none 1 127.0.0.1 a"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Server"/>
+<booleanAttribute key="org.eclipse.tptp.platform.jvmti.client.ATTR_EXEC_AUTO_POLLING" value="true"/>
+<booleanAttribute key="org.eclipse.tptp.platform.jvmti.client.ATTR_EXEC_CPU_TIME" value="false"/>
+<booleanAttribute key="org.eclipse.tptp.platform.jvmti.client.ATTR_EXEC_FLOW" value="true"/>
+<booleanAttribute key="org.eclipse.tptp.platform.jvmti.client.ATTR_EXEC_MANUAL_POLLING" value="false"/>
+<intAttribute key="org.eclipse.tptp.platform.jvmti.client.ATTR_EXEC_POLLING_TIME" value="60"/>
+<stringAttribute key="org.eclipse.tptp.platform.jvmti.client.ATTR_FILTERSET_ID" value="auto_generated_filter_set"/>
+</launchConfiguration>

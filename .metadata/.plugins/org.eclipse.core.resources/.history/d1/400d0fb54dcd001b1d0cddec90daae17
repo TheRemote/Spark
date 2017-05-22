@@ -1,0 +1,656 @@
+package codemallet.spark.player;
+
+// Player.java
+// Copyright James Chambers, May 2006, 05jchambers@gmail.com
+
+import java.awt.Rectangle;
+
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+import codemallet.spark.collision.Collision;
+import codemallet.spark.collision.GameCollision;
+import codemallet.spark.map.Flag;
+
+public class LocalPlayer
+{
+	Spark game;
+
+	public String Name;
+
+	String Points;
+
+	public byte Index;
+
+	public float X;
+
+	public float Y;
+
+	float MoveX;
+
+	float MoveY;
+
+	float DriftX;
+
+	float DriftY;
+
+	float LastMoveX;
+
+	float LastMoveY;
+
+	public byte Team;
+
+	public byte Direction;
+
+	public int OffsetX;
+
+	public int OffsetY;
+
+	public byte Score;
+
+	public boolean Dead;
+
+	public boolean HoldingPen;
+
+	public boolean Smoking;
+
+	public boolean hasFlag;
+
+	public byte FlagIndex;
+
+	public boolean Frozen;
+
+	public long timeHoldingPen;
+
+	private long MovementTick;
+
+	float MoveSpeed = 0.1f;
+
+	float ReducedSpeed = 0.825f;
+
+	public int WarpEffect;
+
+	public long WarpTimer;
+
+	public boolean WarpMe = false;
+
+	public int WarpX;
+
+	public int WarpY;
+
+	static final Color nameColor = new Color(222, 170, 0);
+
+	static final Color pointsColor = new Color(222, 120, 0);
+
+	public LocalPlayer(Spark game)
+	{
+		this.game = game;
+
+		OffsetX = 384;
+		OffsetY = 284;
+	}
+
+	public void Render()
+	{
+		if (Dead == true)
+			return;
+
+		if (Name != null)
+		{
+			Points = " [" + Score + "]";
+
+			int drawx = OffsetX + 16;
+			int drawy = OffsetY + 30;
+			int NameLength = game.nameFont.getWidth(Name);
+			int PointsLength = game.nameFont.getWidth(Points);
+			int TotalLength = (NameLength + PointsLength) / 2;
+			drawx -= TotalLength;
+
+			game.nameFont.drawString(drawx + 1, drawy + 1, Name, Color.black);
+			game.nameFont.drawString(drawx, drawy, Name, nameColor);
+			drawx += NameLength;
+			game.nameFont.drawString(drawx, drawy, Points, pointsColor);
+		}
+
+		if (WarpEffect == 0)
+		{
+			game.g.drawImage(game.imgTuna, OffsetX, OffsetY, OffsetX + 32,
+					OffsetY + 32, (Direction * 32), 292 + (Team * 32),
+					(Direction * 32) + 32, 292 + (Team * 32) + 32);
+		}
+		else
+		{
+			int Difference = 32 - WarpEffect;
+			int Subtract = 0;
+			if (Difference > 0)
+				Subtract = Difference / 2;
+			game.g.drawImage(game.imgTuna, OffsetX + Subtract, OffsetY
+					+ Subtract, OffsetX + 32 - Subtract, OffsetY + 32
+					- Subtract, (Direction * 32), 292 + (Team * 32),
+					(Direction * 32) + 32, 292 + (Team * 32) + 32);
+		}
+
+		if (hasFlag == true)
+		{
+			Flag flag = (Flag) game.gameMap.Flags.get(FlagIndex);
+			game.g.drawImage(game.imgTuna, OffsetX + 15, OffsetY + 5,
+					OffsetX + 15 + 16, OffsetY + 5 + 16, 288,
+					311 + flag.Team * 32, 288 + 16, 311 + flag.Team * 32 + 16);
+		}
+	}
+
+	public void Cycle(int delta)
+	{
+		MoveX = 0;
+		MoveY = 0;
+
+		if (Dead == true)
+			return;
+
+		if (WarpMe == true)
+		{
+			WarpMe = false;
+			X = WarpX;
+			Y = WarpY;
+		}
+
+		if (Frozen == false)
+		{
+			if (game.gameInput.KeyDown)
+			{
+				MoveY = MoveSpeed * delta;
+			}
+
+			if (game.gameInput.KeyUp)
+			{
+				MoveY -= MoveSpeed * delta;
+			}
+
+			if (game.gameInput.KeyRight)
+			{
+				MoveX = MoveSpeed * delta;
+			}
+
+			if (game.gameInput.KeyLeft)
+			{
+				MoveX -= MoveSpeed * delta;
+			}
+		}
+
+		if (MoveX != 0 && MoveY != 0)
+		{
+			if (MoveX < 0)
+				MoveX = -ReducedSpeed * delta;
+			else
+				MoveX = ReducedSpeed * delta;
+			if (MoveY < 0)
+				MoveY = -ReducedSpeed * delta;
+			else
+				MoveY = ReducedSpeed * delta;
+		}
+
+		// Movement
+		if (MoveX == 0 && MoveY == 0)
+		{
+			Direction = 8;
+		}
+		else
+		{
+			int MoveXDir = 0;
+			int MoveYDir = 0;
+			if (MoveX < 0)
+				MoveXDir = -1;
+			if (MoveX > 0)
+				MoveXDir = 1;
+			if (MoveY < 0)
+				MoveYDir = -1;
+			if (MoveY > 0)
+				MoveYDir = 1;
+
+			switch (MoveXDir)
+			{
+				case -1: // Left
+				{
+					switch (MoveYDir)
+					{
+						case -1: // Left + Up
+							Direction = 3;
+							break;
+						case 0: // Left
+							Direction = 4;
+							break;
+						case 1: // Left + Down
+							Direction = 5;
+							break;
+					}
+					break;
+				}
+				case 0: // Not moving
+				{
+					switch (MoveYDir)
+					{
+						case -1: // Up
+							Direction = 2;
+							break;
+						case 0: // Not Moving
+							break;
+						case 1: // Down
+							Direction = 6;
+							break;
+					}
+					break;
+				}
+				case 1: // Right
+				{
+					switch (MoveYDir)
+					{
+						case -1: // Right + Up
+							Direction = 1;
+							break;
+						case 0: // Right
+							Direction = 0;
+							break;
+						case 1: // Right + Down
+							Direction = 7;
+							break;
+					}
+					break;
+				}
+			}
+		}
+
+		float OldX = X;
+		float OldY = Y;
+
+		DriftX = 0;
+		DriftY = 0;
+		checkDrift();
+		float OldMoveX = MoveX;
+		float OldMoveY = MoveY;
+		MoveX += DriftX;
+		MoveY += DriftY;
+
+		if (hasFlag)
+		{
+			MoveX = MoveX / 1.5f;
+			MoveY = MoveY / 1.5f;
+		}
+
+		X += MoveX;
+
+		if (checkCollision() == true)
+		{
+			X = OldX;
+		}
+
+		Y += MoveY;
+		if (checkCollision() == true)
+		{
+			Y = OldY;
+		}
+
+		MoveX = OldMoveX;
+		MoveY = OldMoveY;
+
+		tryToMove(OldX, OldY);
+
+		MoveX = OldMoveX;
+		MoveY = OldMoveY;
+
+		if (game.Tick > MovementTick || MoveX != LastMoveX
+				|| MoveY != LastMoveY)
+		{
+			short MovingX = 0;
+			short MovingY = 0;
+			if (MoveX > 0)
+				MovingX = 1;
+			if (MoveX < 0)
+				MovingX = -1;
+			if (MoveY > 0)
+				MovingY = 1;
+			if (MoveY < 0)
+				MovingY = -1;
+			game.gameNetCode.SendUDP("movement " + (short) X + " " + (short) Y
+					+ " " + (short) MovingX + " " + (short) MovingY, false);
+			MovementTick = game.Tick + 100;
+		}
+
+		LastMoveX = MoveX;
+		LastMoveY = MoveY;
+		game.gamePlayers.setX(Index, X);
+		game.gamePlayers.setY(Index, Y);
+
+		if (WarpEffect == 0)
+		{
+		}
+		else
+		{
+			if (game.Tick > WarpTimer)
+			{
+				WarpTimer = game.Tick + 30;
+				WarpEffect--;
+			}
+		}
+	}
+
+	public void checkDrift()
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				int TX = (int) (X / 16) + i;
+				int TY = (int) (Y / 16) + j;
+				if (TX > 0 && TY > 0 && TX <= 256 && TY <= 256)
+				{
+					int tile = game.gameMap.GameMap.MapData[(TY * game.gameMap.GameMap.width)
+							+ TX];
+
+					switch (tile)
+					{
+						// Down
+						case 32916:
+						case 32918:
+						case 32920:
+						{
+							char idx = (char) ((tile & 0x00FF));
+							tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+							TX *= 16;
+							TY *= 16;
+							int cy = tile / 40 * 16;
+							int cx = tile % 40 * 16;
+							Rectangle intersect = Collision
+									.PixelPointCollision((int) X + 16,
+											(int) Y + 16, game.imgTileTanks,
+											TX, TY, 16, 16, cx, cy);
+							if (intersect != null)
+							{
+								DriftY = 1;
+							}
+						}
+							break;
+						// Up
+						case 32935:
+						case 32937:
+						case 32939:
+						{
+							char idx = (char) ((tile & 0x00FF));
+							tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+							TX *= 16;
+							TY *= 16;
+							int cy = tile / 40 * 16;
+							int cx = tile % 40 * 16;
+							Rectangle intersect = Collision
+									.PixelPointCollision((int) X + 16,
+											(int) Y + 16, game.imgTileTanks,
+											TX, TY, 16, 16, cx, cy);
+							if (intersect != null)
+							{
+								DriftY = -1;
+							}
+						}
+							break;
+						// Left
+						case 32945:
+						case 32947:
+						case 32949:
+						{
+							char idx = (char) ((tile & 0x00FF));
+							tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+							TX *= 16;
+							TY *= 16;
+							int cy = tile / 40 * 16;
+							int cx = tile % 40 * 16;
+							Rectangle intersect = Collision
+									.PixelPointCollision((int) X + 16,
+											(int) Y + 16, game.imgTileTanks,
+											TX, TY, 16, 16, cx, cy);
+							if (intersect != null)
+							{
+								DriftX = -1;
+							}
+						}
+							break;
+						// Right
+						case 32951:
+						case 32953:
+						case 32955:
+						{
+							char idx = (char) ((tile & 0x00FF));
+							tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+							TX *= 16;
+							TY *= 16;
+							int cy = tile / 40 * 16;
+							int cx = tile % 40 * 16;
+							Rectangle intersect = Collision
+									.PixelPointCollision((int) X + 16,
+											(int) Y + 16, game.imgTileTanks,
+											TX, TY, 16, 16, cx, cy);
+							if (intersect != null)
+							{
+								DriftX = 1;
+							}
+						}
+							break;
+					}
+				}
+			}
+		}
+	}
+
+	public boolean checkCollision()
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				int TX = (int) (X / 16) + i;
+				int TY = (int) (Y / 16) + j;
+				if (TX > 0 && TY > 0 && TX <= 256 && TY <= 256)
+				{
+					int tile = game.gameMap.GameMap.MapData[(TY * game.gameMap.GameMap.width)
+							+ TX];
+
+					if ((tile & 0x8000) != 0) // Is it an animation?
+					{
+						char idx = (char) ((tile & 0x00FF));
+						tile = game.gameMap.anim_list[idx].frames[game.gameMap.anim_list[idx].Frame];
+					}
+
+					if (GameCollision.checkTankCollision(tile) == true)
+					{
+						TX *= 16;
+						TY *= 16;
+						int cy = tile / 40 * 16;
+						int cx = tile % 40 * 16;
+						if (Collision.PixelCollision(game.imgTunaCollision,
+								(int) X, (int) Y, 31, 31, 8 * 32, 292,
+								game.imgTileTanks, TX, TY, 16, 16, cx, cy))
+						{
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public void tryToMove(float OldX, float OldY)
+	{
+		float MoveAxisTest = 1.0f;
+		float OriginalMoveSpeed = 1.0f;
+		if ((MoveX != 0 || MoveY != 0) && X == OldX && Y == OldY)
+		{
+			int Tries = 0;
+			float OriginalX = OldX;
+			float OriginalY = OldY;
+			float OriginalMoveX = MoveX;
+			float OriginalMoveY = MoveY;
+			while (true)
+			{
+				if (Tries > 4)
+				{
+					break;
+				}
+
+				MoveX = OriginalMoveX;
+				MoveY = OriginalMoveY;
+				OldX = OriginalX;
+				OldY = OriginalY;
+
+				if (MoveX != 0 && MoveY == 0)
+				{
+					if (MoveX > 0)
+						MoveX = MoveAxisTest;
+					else
+						MoveX = -MoveAxisTest;
+
+					MoveY = MoveAxisTest;
+					Y += MoveY;
+					if (checkCollision() == true)
+					{
+						Y = OldY;
+					}
+					else
+					{
+						if (MoveX > 0)
+							X += OriginalMoveSpeed;
+						else
+							X -= OriginalMoveSpeed;
+						if (checkCollision() == true)
+						{
+							X = OldX;
+							Y = OldY;
+						}
+						else
+						{
+							Y = OldY;
+							Y += OriginalMoveSpeed;
+
+							X = OldX;
+							if (MoveX > 0)
+								X += OriginalMoveSpeed;
+							else
+								X -= OriginalMoveSpeed;
+							if (checkCollision() == true)
+								X = OldX;
+							break;
+						}
+					}
+					MoveY = -MoveAxisTest;
+					Y += MoveY;
+					if (checkCollision() == true)
+					{
+						Y = OldY;
+					}
+					else
+					{
+						if (MoveX > 0)
+							X += OriginalMoveSpeed;
+						else
+							X -= OriginalMoveSpeed;
+						if (checkCollision() == true)
+						{
+							X = OldX;
+							Y = OldY;
+						}
+						else
+						{
+							Y = OldY;
+							Y -= OriginalMoveSpeed;
+
+							X = OldX;
+							if (MoveX > 0)
+								X += OriginalMoveSpeed;
+							else
+								X -= OriginalMoveSpeed;
+							if (checkCollision() == true)
+								X = OldX;
+							break;
+						}
+					}
+				}
+				else if (MoveY != 0 && MoveX == 0)
+				{
+					if (MoveY > 0)
+						MoveY = MoveAxisTest;
+					else
+						MoveY = -MoveAxisTest;
+
+					MoveX = MoveAxisTest;
+					X += MoveX;
+					if (checkCollision() == true)
+					{
+						X = OldX;
+					}
+					else
+					{
+						if (MoveY > 0)
+							Y += OriginalMoveSpeed;
+						else
+							Y -= OriginalMoveSpeed;
+						if (checkCollision() == true)
+						{
+							X = OldX;
+							Y = OldY;
+						}
+						else
+						{
+							X = OldX;
+							X += OriginalMoveSpeed;
+
+							Y = OldY;
+							if (MoveY > 0)
+								Y += OriginalMoveSpeed;
+							else
+								Y -= OriginalMoveSpeed;
+							if (checkCollision() == true)
+								Y = OldY;
+							break;
+						}
+					}
+					MoveX = -MoveAxisTest;
+					X += MoveX;
+					if (checkCollision() == true)
+					{
+						X = OldX;
+					}
+					else
+					{
+						if (MoveY > 0)
+							Y += OriginalMoveSpeed;
+						else
+							Y -= OriginalMoveSpeed;
+						if (checkCollision() == true)
+						{
+							X = OldX;
+							Y = OldY;
+						}
+						else
+						{
+							X = OldX;
+							X -= OriginalMoveSpeed;
+
+							Y = OldY;
+
+							Y = OldY;
+							if (MoveY > 0)
+								Y += OriginalMoveSpeed;
+							else
+								Y -= OriginalMoveSpeed;
+							if (checkCollision() == true)
+								Y = OldY;
+							break;
+						}
+					}
+				}
+
+				MoveAxisTest = MoveAxisTest * 2;
+				Tries++;
+			}
+		}
+
+	}
+}

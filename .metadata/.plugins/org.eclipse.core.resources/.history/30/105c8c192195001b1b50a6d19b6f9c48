@@ -1,0 +1,212 @@
+package codemallet.spark;
+
+import java.awt.Color;
+import java.awt.DisplayMode;
+import java.awt.Frame;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.security.MessageDigest;
+
+import javax.swing.ImageIcon;
+
+import codemallet.spark.net.NetCode;
+
+public class Spark
+{
+	private static final long serialVersionUID = 1;
+
+	public static final String Version = "1.02";
+
+	public GamePanel panel;
+
+	public NetCode gameNetCode;
+
+	public Frame frame;
+
+	public String Account = "";
+
+	public boolean Start = false;
+
+	public boolean Windowed = false;
+
+	public void init()
+	{
+		long period = (long) (1000.0 / 200.0) * 1000000L;
+		panel = new GamePanel(period, this);
+		gameNetCode = new NetCode(this);
+		if (Start == true)
+		{
+			start();
+		}
+	}
+
+	public void start()
+	{
+		LoadFrame();
+
+		panel.run();
+	}
+
+	public void destroy()
+	{
+		if (panel != null)
+		{
+			panel.setRunning(false);
+			if (gameNetCode != null)
+				gameNetCode.closeLink();
+			if (panel.gameSound != null)
+			{
+				panel.gameSound.clipsLoader.closeSoundsFile("clipsInfo.txt");
+				panel.setRunning(false);
+			}
+		}
+		if (frame != null)
+			frame.dispose();
+
+		panel = null;
+		frame = null;
+	}
+
+	public static void main(String args[])
+	{
+		Spark spark = new Spark();
+
+		if (args.length > 0)
+		{
+			spark.Account = args[0];
+		}
+		else
+			return;
+
+		if (args.length > 1)
+		{
+			MessageDigest md = null;
+			MessageDigest md2 = null;
+			StringBuffer nameHash = null;
+			try
+			{
+				md = MessageDigest.getInstance("SHA");
+				md.reset();
+				md.update(spark.Account.getBytes());
+				byte hash[] = md.digest();
+				md2 = MessageDigest.getInstance("MD5");
+				md2.reset();
+				md2.update(hash);
+				hash = md2.digest();
+				nameHash = new StringBuffer();
+				for (int i = 0; i < hash.length; i++)
+				{
+					nameHash.append(Integer.toHexString(0xFF & hash[i]));
+				}
+			}
+			catch (Exception e)
+			{
+				System.out.println("Hash Exception");
+				e.printStackTrace();
+				return;
+			}
+
+			// if (nameHash.toString().compareTo(args[1]) != 0)
+			// return;
+		}
+		else
+		{
+			// return;
+		}
+
+		if (args.length > 2)
+		{
+			spark.Windowed = true;
+		}
+
+		spark.init();
+
+	}
+
+	public void LoadFrame()
+	{
+		frame = new Frame("Spark");
+		frame.setUndecorated(true);
+
+		// frame
+		// .setIconImage(new ImageIcon(panel.gameImageLoader.getClass()
+		// .getClassLoader().getResource("images/imgIcon.gif"))
+		// .getImage());
+
+		frame.setIconImage(new ImageIcon("images/imgIcon.gif").getImage());
+
+		frame.setFocusable(false);
+		frame.setResizable(false);
+
+		frame.setBackground(Color.black);
+
+		if (Windowed == false)
+		{
+			panel.gameOptions.Fullscreen = true;
+			frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(
+					frame);
+			try
+			{
+				Thread.sleep(100);
+			}
+			catch (Exception e)
+			{
+
+			}
+			frame.getGraphicsConfiguration().getDevice().setDisplayMode(
+					new DisplayMode(800, 600, 16, 0));
+		}
+		else
+		{
+			panel.gameOptions.Fullscreen = false;
+			frame.setLocationRelativeTo(null);
+		}
+
+		frame.setVisible(true);
+
+		frame.addWindowListener(new WindowListener()
+		{
+			public void windowClosing(WindowEvent e)
+			{
+				if (panel != null)
+					panel.setRunning(false);
+
+				System.out.println("Frame Closing.");
+
+				frame.dispose();
+			}
+
+			public void windowClosed(WindowEvent e)
+			{
+				System.out.println("Frame Closed.");
+
+				destroy();
+			}
+
+			public void windowDeactivated(WindowEvent e)
+			{
+
+			}
+
+			public void windowActivated(WindowEvent e)
+			{
+
+			}
+
+			public void windowOpened(WindowEvent e)
+			{
+
+			}
+
+			public void windowIconified(WindowEvent e)
+			{
+
+			}
+
+			public void windowDeiconified(WindowEvent e)
+			{
+
+			}
+		});
+	}
+}

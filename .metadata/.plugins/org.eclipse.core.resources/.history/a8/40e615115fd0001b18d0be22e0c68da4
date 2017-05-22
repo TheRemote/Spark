@@ -1,0 +1,90 @@
+package codemallet.spark.weapon;
+
+
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+
+
+public class LaserList
+{
+	private LinkedList<Laser> LaserList;
+
+	private Spark game;
+
+	public LaserList(Spark game)
+	{
+		this.game = game;
+
+		LaserList = new LinkedList<Laser>();
+	}
+
+	synchronized public void Cycle(int delta)
+	{
+		ListIterator iterator = LaserList.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Laser laser = (Laser) iterator.next();
+			laser.Cycle(delta);
+
+			if (laser.TrailLength < 0)
+			{
+				iterator.remove();
+			}
+		}
+	}
+
+	synchronized public void addLaser(double X, double Y, double Angle,
+			byte Owner)
+	{
+		Laser laser = new Laser(game);
+		laser.X = X;
+		laser.Y = Y;
+		laser.StartX = X;
+		laser.StartY = Y;
+		laser.Angle = Angle;
+		laser.Owner = Owner;
+		laser.Team = game.gamePlayers.getTeam(Owner);
+
+		switch (laser.Team)
+		{
+			case 0:
+				laser.StartColor = Color.green;
+				laser.EndColor = new Color(60, 60, 60);
+				break;
+			case 1:
+				laser.StartColor = Color.red;
+				laser.EndColor = new Color(70, 70, 70);
+				break;
+			case 2:
+				laser.StartColor = Color.blue;
+				laser.EndColor = new Color(70, 70, 70);
+				break;
+			case 3:
+				laser.StartColor = Color.yellow;
+				laser.EndColor = new Color(70, 70, 70);
+				break;
+
+		}
+
+		laser.Life = 500;
+		laser.MaxLife = laser.Life;
+
+		LaserList.add(laser);
+	}
+
+	synchronized public void drawLasers()
+	{
+		ListIterator iterator = LaserList.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Laser laser = (Laser) iterator.next();
+			laser.Render();
+		}
+	}
+}

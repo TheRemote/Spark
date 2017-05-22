@@ -1,0 +1,409 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_OPEN                BITMAP                  "res\\open.bmp"
+IDB_BRIDGE              BITMAP                  "res\\bridge.bmp"
+IDB_BUNKER              BITMAP                  "res\\bunker.bmp"
+IDB_CONV                BITMAP                  "res\\conv.bmp"
+IDB_COPY                BITMAP                  "res\\copy.bmp"
+IDB_CUT                 BITMAP                  "res\\cut.bmp"
+IDB_DROPPER             BITMAP                  "res\\dropper.bmp"
+IDB_EDIT                BITMAP                  "res\\edit.bmp"
+IDB_FILL                BITMAP                  "res\\fill.bmp"
+IDB_FLAG                BITMAP                  "res\\flag.bmp"
+IDB_HPEN                BITMAP                  "res\\hpen.bmp"
+IDB_MIRROR              BITMAP                  "res\\mirror.bmp"
+IDB_NEW                 BITMAP                  "res\\new.bmp"
+IDB_AUTHOR              BITMAP                  "res\\author.bmp"
+IDB_PASTE               BITMAP                  "res\\paste.bmp"
+IDB_POLE                BITMAP                  "res\\pole.bmp"
+IDB_ROTATE              BITMAP                  "res\\rotate.bmp"
+IDB_SAVE                BITMAP                  "res\\save.bmp"
+IDB_SELECT              BITMAP                  "res\\select.bmp"
+IDB_SPAWN               BITMAP                  "res\\spawn.bmp"
+IDB_SWITCH              BITMAP                  "res\\switch.bmp"
+IDB_WALL                BITMAP                  "res\\wall.bmp"
+IDB_WARP                BITMAP                  "res\\warp.bmp"
+IDB_LINE                BITMAP                  "res\\line.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAPINFO DIALOG  0, 0, 362, 247
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Map Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_MAPNAME,61,32,148,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DESC,29,59,179,32,ES_MULTILINE | ES_AUTOVSCROLL
+    CONTROL         "Bouncies",IDC_BOUNCIES,"Button",BS_AUTOCHECKBOX | 
+                    BS_LEFTTEXT | WS_TABSTOP,239,30,89,14
+    CONTROL         "Missiles",IDC_MISSLES,"Button",BS_AUTOCHECKBOX | 
+                    BS_LEFTTEXT | WS_TABSTOP,239,42,89,14
+    CONTROL         "Bombs",IDC_BOMBS,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | 
+                    WS_TABSTOP,239,53,89,14
+    CONTROL         "Slider1",IDC_LDAMAGE,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,113,119,96,11
+    CONTROL         "Slider1",IDC_SDAMAGE,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,113,138,96,11
+    CONTROL         "Slider1",IDC_RECRATE,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,113,159,96,11
+    EDITTEXT        IDC_MAXPLAY,302,118,33,10,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_DEFHOLD,302,132,33,10,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_TEAMS,302,147,33,10,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_POWUPS,301,190,33,10,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Frag Game",IDC_FRAG,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,30,195,106,11
+    CONTROL         "Flag Game",IDC_FLAG,"Button",BS_AUTORADIOBUTTON,30,208,
+                    91,11
+    CONTROL         "Switch Game",IDC_SWITCH,"Button",BS_AUTORADIOBUTTON,30,
+                    221,76,12
+    DEFPUSHBUTTON   "&Set",IDC_SETSET,232,209,45,19
+    PUSHBUTTON      "&Cancel",IDC_CANSET,289,210,45,19
+    GROUPBOX        "Map",IDC_STATIC,21,19,194,78
+    GROUPBOX        "Weapons Available",IDC_STATIC,223,19,119,78
+    GROUPBOX        "Dynamic Settings",IDC_STATIC,20,104,196,72
+    GROUPBOX        "Game Objective",IDC_STATIC,20,182,195,56
+    GROUPBOX        "Miscellaneous",IDC_STATIC,223,104,119,100
+    LTEXT           "Name",IDC_STATIC,35,33,23,11
+    LTEXT           "Description",IDC_STATIC,33,48,114,10
+    LTEXT           "Laser Damage",IDC_STATIC,39,119,49,11
+    LTEXT           "Special Damage",IDC_STATIC,36,137,54,11
+    LTEXT           "Recharge Rate",IDC_STATIC,37,158,53,9
+    CTEXT           "normal",IDC_LASERD,134,109,55,8,SS_CENTERIMAGE
+    CTEXT           "normal",IDC_SPECIALD,134,130,55,8,SS_CENTERIMAGE
+    CTEXT           "normal",IDC_RECHARGER,134,149,55,8,SS_CENTERIMAGE
+    LTEXT           "Maximum Players",IDC_STATIC,229,118,68,11
+    LTEXT           "Holding Time",IDC_STATIC,240,132,44,11
+    LTEXT           "Number of Teams",IDC_STATIC,230,148,63,9
+    LTEXT           "Simultaneous Powerups",IDC_STATIC,231,178,100,8
+END
+
+IDD_CUSTOMIZE DIALOGEX 0, 0, 392, 215
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Internal Data Customization"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "Walls",IDC_WALL,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_GROUP | WS_TABSTOP,9,7,43,15
+    CONTROL         "Flags",IDC_FLAG,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_TABSTOP,56,7,43,15
+    CONTROL         "Conveyors",IDC_CONV,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE,103,7,43,15
+    CONTROL         "Switches",IDC_SWITCH2,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_TABSTOP,150,7,43,15
+    CONTROL         "Poles",IDC_POLE,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_TABSTOP,197,7,43,15
+    CONTROL         "Bridges",IDC_BRIDGE,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_TABSTOP,244,7,43,15
+    CONTROL         "Bunkers",IDC_BUNKER,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_TABSTOP,291,7,43,15
+    CONTROL         "Spawn Data",IDC_SPAWN,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_TABSTOP,338,7,43,15
+    PUSHBUTTON      "&Add",IDC_ADD,273,58,77,17,WS_GROUP
+    PUSHBUTTON      "&Edit",IDC_EDIT,273,89,77,17
+    PUSHBUTTON      "&Remove",IDC_REMOVE,272,122,77,17
+    PUSHBUTTON      "&Set",IDC_SETSET,263,169,45,20,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDC_CANSET,315,169,45,20
+    GROUPBOX        "Control",IDC_STATIC,256,39,107,108
+END
+
+IDD_SETTINGS DIALOG  0, 0, 187, 194
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MalletEdit Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDC_SETSET,11,141,50,14
+    PUSHBUTTON      "Cancel",IDC_CANSET,11,161,50,14
+    CONTROL         "Associate with .map extension at startup",IDC_ASSOC,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,11,141,11
+    CONTROL         "Save tiles.bmp arrangement",IDC_ARRANGE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,30,103,11
+    CONTROL         "Automatically scroll map areas",IDC_AUTOPAN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,49,109,11
+    CONTROL         "Minimize MalletEdit to the windows system tray",
+                    IDC_SYSTRAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,68,
+                    146,11
+    CONTROL         "Use anal wall type connections",IDC_WALLMODE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,87,113,11
+    PUSHBUTTON      "&Restore tiles.bmp",IDC_RESTORE,96,141,79,14
+    PUSHBUTTON      "&Customize Internal data",IDC_CUSTOMIZE,96,161,79,14
+    CONTROL         "Show mini-overview",IDC_MINIVIEW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,106,113,11
+    CONTROL         "Animate maps (CPU expensive)",IDC_ANIMFRAME,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,125,113,11
+END
+
+IDD_OVERVIEW DIALOGEX 0, 0, 254, 238
+STYLE DS_SYSMODAL | DS_SETFONT | DS_3DLOOK | WS_VISIBLE | WS_CLIPSIBLINGS | 
+    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_PALETTEWINDOW
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Export",IDC_EXPORT,21,47,41,15
+END
+
+IDD_WARPTOOL DIALOG  0, 0, 369, 234
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | 
+    WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+CAPTION "MalletEdit Warp Tool"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_SOURCE,70,17,48,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_DESTINATION,259,17,48,14,ES_AUTOHSCROLL | ES_NUMBER
+    LISTBOX         IDC_WARPS,273,73,84,90,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Set",IDOK,121,203,52,18
+    PUSHBUTTON      "&Cancel",IDCANCEL,196,203,52,18
+    LTEXT           "Warp's Address:",IDC_STATIC,17,17,52,14
+    LTEXT           "Warp's Destination:",IDC_STATIC,192,17,62,14
+    CONTROL         "",IDC_MAPVIEW,"MalletEdit_warptoolarea",0x0,12,72,252,
+                    121
+    LTEXT           "Note: Enter the address of the warp you will be placing. After you have done this, select a destination warp you would like pilots to be transported to below.",
+                    IDC_STATIC,18,33,152,36
+    LTEXT           "Remember, if other warps have the same address of the warp you select, they may possibly teleport there -- ARC does it randomly.",
+                    IDC_STATIC,200,33,152,36
+    CONTROL         "",IDC_ANIMS,"MalletEdit_warpanims",WS_TABSTOP,273,175,
+                    39,18
+END
+
+IDD_ABOUT DIALOGEX 0, 0, 225, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About MalletEdit"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "&Close",IDOK,157,75,50,14
+    LTEXT           "MalletEdit v1.00",IDC_VERSION,84,18,121,26,0,
+                    WS_EX_RIGHT
+    RTEXT           "©2007 CodeMallet\nhttp://arc.codemallet.com/\n\nBased on sedit by David Parton",
+                    IDC_STATIC,91,37,114,33
+    CONTROL         115,IDC_AUTHOR,"Static",SS_BITMAP,21,16,64,59
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_MAPINFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 353
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 240
+    END
+
+    IDD_CUSTOMIZE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 385
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 208
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 187
+    END
+
+    IDD_OVERVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 247
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 231
+    END
+
+    IDD_WARPTOOL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 362
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 218
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 90
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINMENU MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New",                        COMM_NEW
+        MENUITEM "&Open",                       COMM_OPEN
+        MENUITEM "&Save",                       COMM_SAVE
+        MENUITEM "Save &as...",                 COMM_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       COMM_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo",                       COMM_UNDO
+        MENUITEM "&Redo",                       COMM_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy",                       COMM_COPY
+        MENUITEM "Cu&t",                        COMM_CUT
+        MENUITEM "&Paste",                      COMM_PASTE
+        MENUITEM "&Delete",                     COMM_DELETE
+        MENUITEM "Fill Selection",              COMM_FILLSEL
+        MENUITEM "&Select All",                 COMM_SELECTALL
+        MENUITEM SEPARATOR
+        MENUITEM "&Overview",                   COMM_OVERVIEW
+        MENUITEM "&Information",                COMM_INFO
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "Tile &Horizontally",          COMM_TILEH
+        MENUITEM "Tile &Vertically",            COMM_TILEV
+        MENUITEM "&Cascade",                    COMM_CASCADE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About MalletEdit",           COMM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR ACCELERATORS 
+BEGIN
+    "C",            COMM_COPY,              VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      COMM_COPY,              VIRTKEY, CONTROL, NOINVERT
+    "X",            COMM_CUT,               VIRTKEY, CONTROL, NOINVERT
+    "D",            COMM_DELETE,            VIRTKEY, CONTROL, NOINVERT
+    VK_RETURN,      COMM_ENTER,             VIRTKEY, NOINVERT
+    "I",            COMM_INFO,              VIRTKEY, CONTROL, NOINVERT
+    "N",            COMM_NEW,               VIRTKEY, CONTROL, NOINVERT
+    "O",            COMM_OPEN,              VIRTKEY, CONTROL, NOINVERT
+    "V",            COMM_PASTE,             VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      COMM_PASTE,             VIRTKEY, SHIFT, NOINVERT
+    "R",            COMM_REDO,              VIRTKEY, CONTROL, NOINVERT
+    VK_TAB,         COMM_TAB,               VIRTKEY, NOINVERT
+    "Z",            COMM_UNDO,              VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_FILLBUCKET          CURSOR                  "res\\cursor1.cur"
+IDC_BUNKERLEFT          CURSOR                  "res\\bunkerle.cur"
+IDC_BUNKERRIGHT         CURSOR                  "res\\bunkerri.cur"
+IDC_BUNKERUP            CURSOR                  "res\\bunkerup.cur"
+IDC_SELECTER            CURSOR                  "res\\cur00001.cur"
+IDC_FLAGGER             CURSOR                  "res\\cur00002.cur"
+IDC_BRIDGELR            CURSOR                  "res\\cur00003.cur"
+IDC_BRIDGEUD            CURSOR                  "res\\cur00004.cur"
+IDC_BUNKERDOWN          CURSOR                  "res\\bunkdown.cur"
+IDC_PICKER              CURSOR                  "res\\nodrop.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// JPEG
+//
+
+IDR_FARPLANE            JPEG                    "res\\farplane.dat"
+IDR_OVERVIEW2           JPEG                    "res\\overview2.dat"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_MAIN                ICON                    "res\\main.ico"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,315 @@
+package codemallet.spark.chat;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.io.FileInputStream;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
+
+import codemallet.spark.GamePanel;
+
+public class Chat
+{
+	GamePanel game;
+
+	Font chatFont;
+
+	String ChatString = "";
+
+	LinkedList<ChatMessage> Messages = new LinkedList<ChatMessage>();
+
+	public Chat(GamePanel game)
+	{
+		this.game = game;
+
+		try
+		{
+			Font loadFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(
+					"images/fntARC.ttf"));
+			
+			chatFont = loadFont.deriveFont(23.0f);
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error loading name font");
+		}
+
+		AddMessage("Spark - Version " + codemallet.spark.Spark.Version,
+				Color.red);
+		AddMessage("CodeMallet - James Chambers - 2007", Color.cyan);
+	}
+
+	synchronized public void drawChat()
+	{
+		int ChatY = 595;
+		int MessageCount = 0;
+
+		game.g.setFont(chatFont);
+
+		ListIterator iterator = Messages.listIterator();
+
+		while (iterator.hasNext())
+		{
+			ChatMessage msg = (ChatMessage) iterator.next();
+
+			if (msg.Parts == 0)
+			{
+				game.g.setColor(Color.black);
+				game.g.drawString(msg.Message, 5 + 1, ChatY + 2);
+				game.g.setColor(msg.color);
+				game.g.drawString(msg.Message, 5, ChatY);
+			}
+			else
+			{
+				int xpos = 5;
+				game.g.setColor(Color.black);
+				game.g.drawString(msg.Part1, xpos + 1, ChatY + 2);
+				game.g.setColor(msg.color1);
+				game.g.drawString(msg.Part1, xpos, ChatY);
+
+				xpos += (msg.Part1.length() * 7);
+				game.g.setColor(Color.black);
+				game.g.drawString(msg.Part2, xpos + 1, ChatY + 2);
+				game.g.setColor(msg.color2);
+				game.g.drawString(msg.Part2, xpos, ChatY);
+
+				if (msg.Parts > 2)
+				{
+					xpos += (msg.Part2.length() * 7);
+					game.g.setColor(Color.black);
+					game.g.drawString(msg.Part3, xpos + 1, ChatY + 2);
+					game.g.setColor(msg.color3);
+					game.g.drawString(msg.Part3, xpos, ChatY);
+				}
+			}
+			ChatY -= 14;
+			MessageCount++;
+
+			if (MessageCount > 8)
+				break;
+		}
+
+		game.g.setColor(Color.white);
+		if (ChatString.length() > 0)
+		{
+			String ChatDrawString = ChatString;
+			int ypos = 20;
+			int chatlength = 80;
+			while (ChatDrawString.length() > chatlength)
+			{
+				int xpos = 400 - (chatlength * 7 / 2);
+				game.g.drawString(ChatDrawString.substring(0, chatlength),
+						xpos, ypos);
+				ypos += 12;
+				ChatDrawString = ChatDrawString.substring(chatlength,
+						ChatDrawString.length());
+			}
+			int xpos = 400 - (ChatDrawString.length() * 7 / 2);
+			game.g.drawString(ChatDrawString, xpos, ypos);
+		}
+
+		if (game.gamePlayer.HoldingPen == true)
+		{
+			String Help = "Press F2 for Help and Game Information";
+			String Time = "";
+			int HoldingTime = (int) ((game.gamePlayer.timeHoldingPen - game.Tick) / 1000);
+			if (HoldingTime >= 0)
+			{
+				Time = "Holding Time Left: " + HoldingTime;
+			}
+			else
+			{
+				Time = "Move to Exit the Holding Pen!";
+			}
+			int xpos = 400 - (Help.length() * 7 / 2);
+			game.g.drawString(Help, xpos, 210);
+			xpos = 400 - (Time.length() * 7 / 2);
+			game.g.drawString(Time, xpos, 240);
+		}
+	}
+
+	synchronized public void AddMessage(String Message, Color color)
+	{
+		int MessageLength = 83;
+		while (Message.length() > MessageLength)
+		{
+			ChatMessage NewMessage = new ChatMessage();
+			NewMessage.Message = Message.substring(0, MessageLength);
+			Message = Message.substring(MessageLength, Message.length());
+			NewMessage.color = color;
+			Messages.addFirst(NewMessage);
+		}
+
+		ChatMessage NewMessage = new ChatMessage();
+		NewMessage.Message = Message;
+		NewMessage.color = color;
+		Messages.addFirst(NewMessage);
+
+		if (Messages.size() > 50)
+			Messages.removeLast();
+	}
+
+	synchronized public void Add2PartMessage(String Part1, String Part2,
+			Color color1, Color color2)
+	{
+		ChatMessage NewMessage = new ChatMessage();
+		NewMessage.Parts = 2;
+		NewMessage.Part1 = Part1;
+		NewMessage.Part2 = Part2;
+		NewMessage.color1 = color1;
+		NewMessage.color2 = color2;
+		Messages.addFirst(NewMessage);
+
+		if (Messages.size() > 50)
+			Messages.removeLast();
+	}
+
+	synchronized public void Add3PartMessage(String Part1, String Part2,
+			String Part3, Color color1, Color color2, Color color3)
+	{
+		ChatMessage NewMessage = new ChatMessage();
+		NewMessage.Parts = 3;
+		NewMessage.Part1 = Part1;
+		NewMessage.Part2 = Part2;
+		NewMessage.Part3 = Part3;
+		NewMessage.color1 = color1;
+		NewMessage.color2 = color2;
+		NewMessage.color3 = color3;
+		Messages.addFirst(NewMessage);
+
+		if (Messages.size() > 50)
+			Messages.removeLast();
+	}
+
+	public void AppendChatString(String append)
+	{
+		ChatString += append;
+	}
+
+	public void backSpace()
+	{
+		if (ChatString.length() <= 1)
+		{
+			ChatString = "";
+		}
+		else
+			ChatString = ChatString.substring(0, ChatString.length() - 1);
+	}
+
+	public void enter()
+	{
+		if (ChatString.length() > 0)
+		{
+			if (ChatString.charAt(0) == KeyEvent.VK_SLASH)
+			{
+				try
+				{
+					processCommand();
+				}
+				catch (Exception e)
+				{
+					System.out.println("Bad command - " + ChatString);
+				}
+			}
+			else
+			{
+				AddMessage(game.gamePlayer.Name + ": " + ChatString,
+						getColor(game.gamePlayer.Team));
+				game.gameNetCode.SendTCP("broadcast " + ChatString);
+				ChatString = "";
+			}
+		}
+	}
+
+	public Color getColor(byte team)
+	{
+		switch (team)
+		{
+		case 0:
+			return Color.green;
+		case 1:
+			return Color.red;
+		case 2:
+			return Color.blue;
+		case 3:
+			return Color.yellow;
+		case 4:
+			return Color.white;
+		}
+
+		return Color.black;
+	}
+
+	public void processCommand()
+	{
+		StringTokenizer st = new StringTokenizer(ChatString);
+		String command = st.nextToken();
+		if (command.equals("/changemap") == true)
+		{
+			game.gameNetCode.SendTCP("changeMap " + st.nextToken());
+			ChatString = "";
+			return;
+		}
+
+		if (command.equals("/team") == true)
+		{
+			game.gameNetCode.SendTCP("changeTeam " + st.nextToken());
+			ChatString = "";
+			return;
+		}
+
+		if (command.equals("/disableudp") == true)
+		{
+			game.gameNetCode.PacketLoss = 100;
+			game.gameNetCode.GoodPackets = 0;
+			game.gameNetCode.ReceiveCounter = 10000000;
+			ChatString = "";
+			return;
+		}
+
+		if (command.equals("/uncap") == true)
+		{
+			long period = (long) (1000.0 / 200.0) * 1000000L;
+			game.setPeriod(period);
+			ChatString = "";
+			return;
+		}
+
+		if (command.equals("/cap") == true)
+		{
+			long period = (long) (1000.0 / 40.0) * 1000000L;
+			game.setPeriod(period);
+			ChatString = "";
+			return;
+		}
+
+		if (command.equals("/lighting") == true)
+		{
+			if (game.gameOptions.Lighting == false)
+				game.gameOptions.Lighting = true;
+			else
+				game.gameOptions.Lighting = false;
+			game.gameLighting.redrawAllLights();
+			ChatString = "";
+			return;
+		}
+
+		printDebugData();
+
+		ChatString = "";
+	}
+
+	public void printDebugData()
+	{
+		String Print = "";
+
+		Print = "FPS: " + game.FPS + "     TCP Ping: "
+				+ game.gameNetCode.TCPPing + "     UDP Ping: "
+				+ game.gameNetCode.UDPPing + "     Packet Loss: "
+				+ game.gameNetCode.PacketLoss;
+
+		AddMessage(Print, Color.white);
+	}
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+<title>Get Windows version</title>
+<meta name="generator" content="Halibut version 1.0 (NSIS Custom Build) xhtml-backend" />
+<link rel="stylesheet" href="style.css" type='text/css' /><script language="JavaScript" type="text/javascript" src="chmlink.js"></script>
+</head>
+
+<body>
+<p><a href='SectionC.4.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='SectionC.6.html'>Next</a></p>
+<a name="C.5"></a><h2>C.5 Get Windows version</h2>
+<pre> ; GetWindowsVersion
+ ;
+ ; Based on Yazno's function, http://yazno.tripod.com/powerpimpit/
+ ; Updated by Joost Verburg
+ ;
+ ; Returns on top of stack
+ ;
+ ; Windows Version (95, 98, ME, NT x.x, 2000, XP, 2003, Vista)
+ ; or
+ ; '' (Unknown Windows Version)
+ ;
+ ; Usage:
+ ;   Call GetWindowsVersion
+ ;   Pop $R0
+ ;   ; at this point $R0 is &quot;NT 4.0&quot; or whatnot
+ 
+ Function GetWindowsVersion
+ 
+   Push $R0
+   Push $R1
+ 
+   ClearErrors
+ 
+   ReadRegStr $R0 HKLM \
+   &quot;SOFTWARE\Microsoft\Windows NT\CurrentVersion&quot; CurrentVersion
+
+   IfErrors 0 lbl_winnt
+   
+   ; we are not NT
+   ReadRegStr $R0 HKLM \
+   &quot;SOFTWARE\Microsoft\Windows\CurrentVersion&quot; VersionNumber
+ 
+   StrCpy $R1 $R0 1
+   StrCmp $R1 '4' 0 lbl_error
+ 
+   StrCpy $R1 $R0 3
+ 
+   StrCmp $R1 '4.0' lbl_win32_95
+   StrCmp $R1 '4.9' lbl_win32_ME lbl_win32_98
+ 
+   lbl_win32_95:
+     StrCpy $R0 '95'
+   Goto lbl_done
+ 
+   lbl_win32_98:
+     StrCpy $R0 '98'
+   Goto lbl_done
+ 
+   lbl_win32_ME:
+     StrCpy $R0 'ME'
+   Goto lbl_done
+ 
+   lbl_winnt:
+ 
+   StrCpy $R1 $R0 1
+ 
+   StrCmp $R1 '3' lbl_winnt_x
+   StrCmp $R1 '4' lbl_winnt_x
+ 
+   StrCpy $R1 $R0 3
+ 
+   StrCmp $R1 '5.0' lbl_winnt_2000
+   StrCmp $R1 '5.1' lbl_winnt_XP
+   StrCmp $R1 '5.2' lbl_winnt_2003
+   StrCmp $R1 '6.0' lbl_winnt_vista lbl_error
+ 
+   lbl_winnt_x:
+     StrCpy $R0 &quot;NT $R0&quot; 6
+   Goto lbl_done
+ 
+   lbl_winnt_2000:
+     Strcpy $R0 '2000'
+   Goto lbl_done
+ 
+   lbl_winnt_XP:
+     Strcpy $R0 'XP'
+   Goto lbl_done
+ 
+   lbl_winnt_2003:
+     Strcpy $R0 '2003'
+   Goto lbl_done
+ 
+   lbl_winnt_vista:
+     Strcpy $R0 'Vista'
+   Goto lbl_done
+ 
+   lbl_error:
+     Strcpy $R0 ''
+   lbl_done:
+ 
+   Pop $R1
+   Exch $R0
+ 
+ FunctionEnd
+</pre>
+<p><a href='SectionC.4.html'>Previous</a> | <a href='Contents.html'>Contents</a> | <a href='SectionC.6.html'>Next</a></p>
+
+<hr />
+
+<address>
+</address>
+</body>
+
+</html>

@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:HierarchyExtensions="http://www.eclipse.org/hyades/models/hierarchy-extensions.xmi" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore">
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:No filter:ST"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:No filter:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 base time:ST" maxElements="10">
+    <orderByExpresions operator="DESC">
+      <operand xsi:type="HierarchyExtensions:SimpleOperand">
+        <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+      </operand>
+    </orderByExpresions>
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_THRESHOLD_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_GET_SET_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 base time:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 cumulative time:ST" maxElements="10">
+    <orderByExpresions operator="DESC">
+      <operand xsi:type="HierarchyExtensions:SimpleOperand">
+        <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/cumulativeTime"/>
+      </operand>
+    </orderByExpresions>
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_THRESHOLD_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_GET_SET_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 cumulative time:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 call:ST" maxElements="10">
+    <orderByExpresions operator="DESC">
+      <operand xsi:type="HierarchyExtensions:SimpleOperand">
+        <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/calls"/>
+      </operand>
+    </orderByExpresions>
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_THRESHOLD_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_GET_SET_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 call:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 total size:ST" maxElements="10">
+    <orderByExpresions operator="DESC">
+      <operand xsi:type="HierarchyExtensions:SimpleOperand">
+        <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/totalSize"/>
+      </operand>
+    </orderByExpresions>
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_THRESHOLD_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_GET_SET_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 total size:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 total instances:ST" maxElements="10">
+    <orderByExpresions operator="DESC">
+      <operand xsi:type="HierarchyExtensions:SimpleOperand">
+        <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/totalInstances"/>
+      </operand>
+    </orderByExpresions>
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_THRESHOLD_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_GET_SET_UNCHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="NEQ" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCPackage/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="-1">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Highest 10 total instances:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Default Filter:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" name="org.eclipse.hyades.trace.ui_THRESHOLD_CHECKED_" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="GE" caseInsensitive="true">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCMethod/baseTime"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="0.001">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+        <arguments xsi:type="HierarchyExtensions:LogicalExpression">
+          <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="LIKE">
+            <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+              <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCMethod/name"/>
+            </leftOperand>
+            <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="get*">
+              <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+            </rightOperands>
+          </arguments>
+        </arguments>
+        <arguments xsi:type="HierarchyExtensions:LogicalExpression">
+          <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="LIKE">
+            <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+              <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCMethod/name"/>
+            </leftOperand>
+            <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="set*">
+              <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+            </rightOperands>
+          </arguments>
+        </arguments>
+        <arguments xsi:type="HierarchyExtensions:LogicalExpression">
+          <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="LIKE">
+            <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+              <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCMethod/name"/>
+            </leftOperand>
+            <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="is*">
+              <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+            </rightOperands>
+          </arguments>
+        </arguments>
+        <arguments xsi:type="HierarchyExtensions:LogicalExpression">
+          <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="LIKE">
+            <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+              <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/trace.xmi#//TRCMethod/name"/>
+            </leftOperand>
+            <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="access$*">
+              <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+            </rightOperands>
+          </arguments>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.trace.views.ProfilingFilterType:Default Filter:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show error log records only:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="50">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="70">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show error log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show warning log records only:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="30">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="49">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show warning log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show information log records only:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="0">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="29">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show information log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show warning and error log records:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="50">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="70">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="30">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="49">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:Show warning and error log records:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:No filter:ST"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogFilterType:No filter:AD"/>
+  <HierarchyExtensions:TimeBasedCorrelationQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show correlated log records only:ST"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show correlated log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show error log records only:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="50">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="70">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show error log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show warning log records only:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="30">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="49">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show warning log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show information log records only:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="0">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="29">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show information log records only:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show warning and error log records:ST">
+    <whereExpression xsi:type="HierarchyExtensions:LogicalExpression" operator="AND">
+      <arguments xsi:type="HierarchyExtensions:LogicalExpression" operator="OR">
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="50">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="70">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+        <arguments xsi:type="HierarchyExtensions:BinaryExpression" operator="BETWEEN">
+          <leftOperand xsi:type="HierarchyExtensions:SimpleOperand">
+            <feature xsi:type="ecore:EAttribute" href="http://www.eclipse.org/hyades/models/cbe.xmi#//CBECommonBaseEvent/severity"/>
+          </leftOperand>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="30">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+          <rightOperands xsi:type="HierarchyExtensions:SimpleOperand" rawValue="49">
+            <valueType href="http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+          </rightOperands>
+        </arguments>
+      </arguments>
+    </whereExpression>
+  </HierarchyExtensions:SimpleSearchQuery>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:Show warning and error log records:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:No filter:ST"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.tptp.platform.log.views.LogInteractionsFilterType:No filter:AD"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.sdb.SymptomFilterType:No filter:ST"/>
+  <HierarchyExtensions:SimpleSearchQuery name="org.eclipse.hyades.sdb.SymptomFilterType:No filter:AD"/>
+</xmi:XMI>

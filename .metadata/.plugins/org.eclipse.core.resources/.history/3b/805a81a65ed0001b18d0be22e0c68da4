@@ -1,0 +1,78 @@
+package codemallet.spark.weapon;
+
+
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Random;
+
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+
+
+public class SparksList
+{
+	private LinkedList<Sparks> SparkList;
+
+	private Spark game;
+
+	Random rand = new Random();
+
+	public SparksList(Spark game)
+	{
+		this.game = game;
+
+		SparkList = new LinkedList<Sparks>();
+	}
+
+	synchronized public void Cycle(int delta)
+	{
+		ListIterator<Sparks> iterator = SparkList.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Sparks spark = iterator.next();
+			spark.Cycle(delta);
+
+			if (game.Tick > spark.Time)
+			{
+				iterator.remove();
+			}
+		}
+	}
+
+	synchronized public void addSpark(double X, double Y, double Angle)
+	{
+		Sparks spark = new Sparks(game);
+		spark.X = X;
+		spark.Y = Y;
+
+		double tmpX = Math.cos(Angle);
+		double tmpY = Math.sin(Angle);
+		spark.Angle = Math.atan2(-tmpY, -tmpX);
+		spark.Angle += (1.50f / rand.nextFloat());
+		spark.Angle -= (1.50f / rand.nextFloat());
+
+		int Reducer = rand.nextInt(100);
+		int Red = 255 - Reducer;
+		int Green = 255 - Reducer;
+		int Blue = rand.nextInt(255);
+
+		spark.Color = new Color(Red, Green, Blue);
+		spark.Time = game.Tick + 200 + rand.nextInt(250);
+		spark.Magnitude = rand.nextFloat() * 1.0f;
+
+		SparkList.add(spark);
+	}
+
+	synchronized public void drawSparks()
+	{
+		ListIterator<Sparks> iterator = SparkList.listIterator();
+
+		while (iterator.hasNext())
+		{
+			Sparks spark = iterator.next();
+			spark.Render();
+		}
+	}
+}

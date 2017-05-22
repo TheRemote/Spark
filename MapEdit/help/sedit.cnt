@@ -1,0 +1,17 @@
+:Base sedit.hlp
+1 General Information=sedit_default
+1 ARC Map Information=arc_map_info
+1 Tools
+2 Edit=edit_tool
+2 Select=select_tool
+2 Mirror=mirror_tool
+2 Rotate=rotate_tool
+2 Wall=wall_tool
+2 Flag Dropper=flag_tool
+2 Flag Pole Dropper=pole_dropper
+2 Holding Pen=hpen_tool
+2 Bunker=bunker_tool
+2 Spawn=spawn_tool
+2 Bridge=bridge_tool
+2 Warp=warp_tool
+2 Switch=switch_tool

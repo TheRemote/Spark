@@ -1,0 +1,8 @@
+#Sat Dec 22 16:26:41 PST 2007
+org.eclipse.hyades.ui.filters.internal.defaultFilters.org.eclipse.tptp.platform.log.interaction.views=true
+org.eclipse.hyades.ui.filters.internal.defaultFilters.org.eclipse.hyades.sdb=true
+org.eclipse.hyades.ui.filters.internal.defaultFilters.org.eclipse.hyades.trace.views=true
+eclipse.preferences.version=1
+org.eclipse.hyades.ui.filters.internal.defaultFilters.org.eclipse.tptp.platform.log.views=true
+REPORT_OPEN_EDITOR=true
+switch_to_perspective=always

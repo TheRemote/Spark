@@ -1,0 +1,231 @@
+package codemallet.spark.net;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
+import javax.swing.JOptionPane;
+
+import org.newdawn.slick.Color;
+
+import codemallet.spark.Spark;
+
+public class NetCode
+{
+	private Socket sock;
+
+	BufferedReader in;
+
+	private PrintWriter out;
+
+	DatagramSocket udp;
+
+	InetAddress serveraddress;
+
+	private Spark game;
+
+	public int PORT = 5760;
+
+	//public static final String HOST = "localhost";
+
+	private static final String HOST = "208.109.234.125";
+
+	public NetProcessor netProcessor;
+
+	// UDP
+
+	byte buffer[] = new byte[64];
+
+	DatagramPacket packet;
+
+	String sendline;
+
+	public long ReceiveCounter = -1;
+
+	public long GoodPackets;
+
+	public long SendCounter;
+
+	public float PacketLoss = 0;
+
+	public int TCPPing = -1;
+
+	public int UDPPing = -1;
+
+	int UDPStrikes;
+
+	long TCPSent;
+
+	long UDPSent;
+
+	public float CriticalPacketLoss = 10.0f;
+
+	public NetCode(Spark game, int Port)
+	{
+		this.game = game;
+		this.PORT = Port;
+
+		game.gameNetCode = this;
+		netProcessor = new NetProcessor(game);
+
+		makeContact();
+	}
+
+	private void makeContact()
+	{
+		try
+		{
+			serveraddress = InetAddress.getByName(HOST);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			sock = new Socket();
+			sock.setTcpNoDelay(true);
+			InetSocketAddress addr = new InetSocketAddress(HOST, PORT);
+			sock.connect(addr);
+
+			in = new BufferedReader(
+					new InputStreamReader(sock.getInputStream()));
+			out = new PrintWriter(sock.getOutputStream(), true);
+
+			try
+			{
+				serveraddress = InetAddress.getByName(HOST);
+
+				udp = new DatagramSocket();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+
+			new NetTCP(game, in).start();
+			new NetUDP(game, udp).start();
+		}
+		catch (Exception e)
+		{
+			game.StartError = true;
+			game.Start = true;
+			e.printStackTrace();
+			System.out.println("Unable to connect to the server!");
+			JOptionPane.showMessageDialog(null,
+					"Unable to connect to the server!");
+		}
+	}
+
+	public void closeLink()
+	{
+		try
+		{
+			if (out != null)
+				out.println("bye");
+			if (in != null)
+				in.close();
+			if (out != null)
+				out.close();
+			if (sock != null)
+				sock.close();
+			if (udp != null)
+				udp.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.out.println("Disconnected from the server! " + e.toString());
+		}
+	}
+
+	public void SendTCP(String line)
+	{
+		out.println(line);
+	}
+
+	public void SendUDP(String line)
+	{
+		if (PacketLoss > CriticalPacketLoss)
+		{
+			SendTCP(line);
+			return;
+		}
+
+		if (packet == null)
+			packet = new DatagramPacket(buffer, buffer.length,
+					game.gameNetCode.serveraddress, PORT);
+
+		sendline = game.gamePlayer.Index + " " + SendCounter + " " + line;
+		SendCounter++;
+		packet.setData(sendline.getBytes());
+		packet.setLength(sendline.length());
+		try
+		{
+			udp.send(packet);
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error sending packet: " + e.toString());
+		}
+	}
+
+	public void SendTCPPing()
+	{
+		SendTCP("tcpping");
+		TCPSent = game.Tick;
+	}
+
+	public void SendUDPPing()
+	{
+		if (PacketLoss > CriticalPacketLoss)
+		{
+			UDPPing = -1;
+			GoodPackets = 0;
+			PacketLoss = 100;
+			return;
+		}
+
+		SendUDP("ping");
+		UDPSent = game.Tick;
+	}
+
+	public void ReceiveTCPPing()
+	{
+		TCPPing = (int) (game.Tick - TCPSent);
+	}
+
+	public void ReceiveUDPPing()
+	{
+		long Total = (game.Tick - UDPSent);
+		UDPPing = (int) Total;
+		if (UDPPing > TCPPing)
+		{
+			int Difference = UDPPing - TCPPing;
+
+			if (Difference > 50)
+			{
+				UDPStrikes++;
+				if (UDPStrikes > 20)
+				{
+					game.gameChat.AddMessage(
+							"Client-Side UDP Disabled - Pings Too High",
+							Color.white);
+					game.gameNetCode.SendTCP("disableUDP");
+					GoodPackets = 0;
+					PacketLoss = 100;
+					ReceiveCounter = 10000000;
+				}
+			}
+			else
+				UDPStrikes = 0;
+		}
+		else
+			UDPStrikes = 0;
+	}
+}
