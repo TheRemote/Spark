@@ -7,5 +7,3 @@ The game has been updated for 64 bit as it would not run when I first opened it 
 I even fixed a couple of memory leaks that the new Eclipse Mylin detected that were present in the original version.
 
 To get it running, simply download the project and open the workspace "Spark" with Eclipse.  There are 2 debug configurations already created for SparkServer and Spark.  Run SparkServer first, then Run the Spark debug configuration and it will connect you to a localhost server.
-
-If you have any questions/comments email remote@codemallet.com
